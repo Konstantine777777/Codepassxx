@@ -3,1118 +3,944 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VaultKey — Gestor Seguro</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>VaultKey</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#06090f;--s1:#0d1424;--s2:#121c30;--s3:#19243c;
-  --border:rgba(0,212,255,0.1);--border2:rgba(255,255,255,0.05);
-  --accent:#00d4ff;--accent-dim:rgba(0,212,255,0.12);--accent-glow:rgba(0,212,255,0.25);
-  --indigo:#6366f1;--text:#e2eaff;--muted:#4a6080;--muted2:#8899aa;
-  --ok:#10b981;--warn:#f59e0b;--danger:#f43f5e;
-  --pass:#10b981;--card-c:#f59e0b;--pin:#a78bfa;
-  --r:12px;--r2:8px;
+  --bg:#202124;--s1:#2a2b2e;--s2:#313235;--s3:#3c3d40;
+  --b:rgba(255,255,255,0.08);--b2:rgba(255,255,255,0.16);
+  --ac:#38c1d6;--acd:rgba(56,193,214,0.14);--acg:rgba(56,193,214,0.08);
+  --gold:#c9a84c;--goldd:rgba(201,168,76,0.1);
+  --white:#ffffff;--text:#e8eaed;--sub:#b0b8c4;--muted:#5f6368;--muted2:#9aa0a6;
+  --ok:#4ade80;--warn:#fbbf24;--err:#f87171;
+  /* category colors */
+  --cat-social:#60a5fa;--cat-trabajo:#a78bfa;--cat-bancario:#4ade80;
+  --cat-compras:#fb923c;--cat-entrete:#f472b6;--cat-otro:#9aa0a6;
 }
-body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
-.mono{font-family:'JetBrains Mono',monospace;}
-
-/* ── SCREENS ── */
+body{background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;min-height:100vh;overflow-x:hidden;}
+.mono{font-family:"DM Mono",monospace;}
 .screen{display:none;min-height:100vh;}
 .screen.active{display:flex;flex-direction:column;}
-
-/* ── AUTH ── */
-#screen-auth{align-items:center;justify-content:center;position:relative;}
-.auth-bg{position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(0,212,255,0.08) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 80% 80%,rgba(99,102,241,0.06) 0%,transparent 50%);}
-.auth-bg::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:48px 48px;}
-.auth-container{position:relative;z-index:1;width:100%;max-width:440px;padding:24px;}
-.auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;justify-content:center;}
-.auth-logo svg{width:42px;height:42px;}
-.auth-logo-text{font-size:28px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--accent),var(--indigo));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.auth-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:32px;box-shadow:0 0 60px rgba(0,212,255,0.05);}
-.auth-tabs{display:flex;background:var(--bg);border-radius:var(--r2);padding:4px;gap:4px;margin-bottom:28px;}
-.auth-tab{flex:1;padding:10px;border:none;background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;border-radius:6px;cursor:pointer;transition:.2s;}
-.auth-tab.active{background:var(--s3);color:var(--text);}
+#screen-auth{align-items:center;justify-content:center;}
+.auth-wrap{width:100%;max-width:415px;padding:20px;}
+.auth-brand{text-align:center;margin-bottom:32px;}
+.brand-icon{width:64px;height:64px;margin:0 auto 16px;background:var(--s1);border:1px solid var(--b2);border-radius:18px;display:flex;align-items:center;justify-content:center;}
+.brand-name{font-family:"Playfair Display",serif;font-size:32px;font-weight:600;color:var(--white);}
+.brand-sub{font-size:13px;color:var(--muted2);margin-top:6px;}
+.auth-card{background:var(--s1);border:1px solid var(--b);border-radius:20px;padding:28px 26px;box-shadow:0 8px 40px rgba(0,0,0,0.4);}
+.local-notice{background:rgba(74,222,128,0.07);border:1px solid rgba(74,222,128,0.2);border-radius:8px;padding:9px 13px;font-size:12px;color:var(--ok);text-align:center;margin-bottom:16px;line-height:1.5;}
+.auth-tabs{display:flex;background:var(--bg);border-radius:10px;padding:3px;gap:3px;margin-bottom:22px;border:1px solid var(--b);}
+.auth-tab{flex:1;padding:9px;border:none;background:transparent;color:var(--muted2);font-family:"DM Sans",sans-serif;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;transition:.2s;}
+.auth-tab.active{background:var(--s3);color:var(--white);}
 .tab-pane{display:none;flex-direction:column;gap:14px;}
 .tab-pane.active{display:flex;}
-.field-group{display:flex;flex-direction:column;gap:6px;}
-.field-label{font-size:12px;font-weight:600;color:var(--muted2);letter-spacing:.5px;text-transform:uppercase;}
-.field-input{background:var(--s2);border:1px solid var(--border2);border-radius:var(--r2);padding:12px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:.2s;}
-.field-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
-.field-input::placeholder{color:var(--muted);}
-.field-input-wrap{position:relative;}
-.field-input-wrap .field-input{width:100%;padding-right:44px;}
-.toggle-vis{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;font-size:16px;}
-.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--indigo));border:none;border-radius:var(--r2);color:var(--bg);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;margin-top:4px;}
-.btn-primary:hover{opacity:.9;transform:translateY(-1px);}
-.btn-primary:active{transform:translateY(0);}
-.auth-error{color:var(--danger);font-size:13px;text-align:center;min-height:18px;margin-top:-4px;}
-.auth-note{font-size:12px;color:var(--muted);text-align:center;line-height:1.6;margin-top:8px;padding:10px;background:var(--accent-dim);border-radius:6px;border-left:2px solid var(--accent);}
-
-/* ── HEADER ── */
-header{background:var(--s1);border-bottom:1px solid var(--border);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.header-logo{display:flex;align-items:center;gap:10px;}
-.header-logo svg{width:28px;height:28px;}
-.header-logo-text{font-size:18px;font-weight:800;letter-spacing:-0.3px;background:linear-gradient(135deg,var(--accent),var(--indigo));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.header-right{display:flex;align-items:center;gap:12px;}
-.user-pill{background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--muted2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.btn-logout{background:none;border:1px solid var(--border2);border-radius:6px;padding:7px 12px;color:var(--muted2);font-family:'Syne',sans-serif;font-size:12px;cursor:pointer;transition:.2s;}
-.btn-logout:hover{border-color:var(--danger);color:var(--danger);}
-
-/* ── STATS ── */
-.stats-bar{display:flex;gap:8px;padding:16px 20px 0;}
-.stat-chip{flex:1;background:var(--s1);border:1px solid var(--border2);border-radius:var(--r);padding:14px 12px;text-align:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
-.stat-chip.active{border-color:var(--accent);background:var(--accent-dim);}
-.stat-chip:hover{border-color:rgba(0,212,255,0.3);}
-.stat-chip::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:transparent;transition:.2s;}
-.stat-chip.active::after{background:var(--accent);}
-.stat-chip[data-type="password"].active{border-color:var(--pass);background:rgba(16,185,129,0.1);}
-.stat-chip[data-type="password"].active::after{background:var(--pass);}
-.stat-chip[data-type="card"].active{border-color:var(--card-c);background:rgba(245,158,11,0.1);}
-.stat-chip[data-type="card"].active::after{background:var(--card-c);}
-.stat-chip[data-type="pin"].active{border-color:var(--pin);background:rgba(167,139,250,0.1);}
-.stat-chip[data-type="pin"].active::after{background:var(--pin);}
-.stat-num{display:block;font-size:22px;font-weight:800;line-height:1;}
-.stat-label{font-size:11px;color:var(--muted2);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;display:block;}
-
-/* ── TOOLBAR ── */
-.toolbar{display:flex;gap:10px;padding:16px 20px;}
-.search-wrap{flex:1;position:relative;}
-.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);width:16px;height:16px;}
-.search-input{width:100%;background:var(--s1);border:1px solid var(--border2);border-radius:var(--r2);padding:10px 12px 10px 38px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:.2s;}
-.search-input:focus{border-color:var(--accent);background:var(--s2);}
-.search-input::placeholder{color:var(--muted);}
-.filter-select{background:var(--s1);border:1px solid var(--border2);border-radius:var(--r2);padding:10px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;cursor:pointer;min-width:160px;}
-.filter-select:focus{border-color:var(--accent);}
-
-/* ── GRID ── */
-.entries-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding:0 20px 100px;}
-
-/* ── ENTRY CARD ── */
-.entry-card{background:var(--s1);border:1px solid var(--border2);border-radius:var(--r);padding:18px;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
-.entry-card:hover{border-color:var(--border);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
-.entry-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
-.entry-card[data-type="password"]::before{background:var(--pass);}
-.entry-card[data-type="card"]::before{background:var(--card-c);}
-.entry-card[data-type="pin"]::before{background:var(--pin);}
-.entry-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
-.entry-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.entry-card[data-type="password"] .entry-icon{background:rgba(16,185,129,0.12);}
-.entry-card[data-type="card"] .entry-icon{background:rgba(245,158,11,0.12);}
-.entry-card[data-type="pin"] .entry-icon{background:rgba(167,139,250,0.12);}
-.entry-info{flex:1;min-width:0;}
-.entry-name{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.entry-sub{font-size:12px;color:var(--muted2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.entry-secret{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted2);letter-spacing:2px;margin-top:6px;}
-.entry-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.cat-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:var(--s3);color:var(--muted2);text-transform:uppercase;letter-spacing:.5px;}
-.tag-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(0,212,255,0.15);}
-.entry-actions{display:flex;gap:6px;margin-top:14px;border-top:1px solid var(--border2);padding-top:12px;}
-.btn-action{flex:1;padding:7px;background:var(--s2);border:1px solid var(--border2);border-radius:6px;color:var(--muted2);font-size:11px;font-family:'Syne',sans-serif;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:5px;}
-.btn-action:hover{color:var(--text);border-color:var(--border);}
-.btn-action.copy:hover{color:var(--accent);border-color:var(--accent);}
-.btn-action.edit:hover{color:var(--indigo);border-color:var(--indigo);}
-.btn-action.del:hover{color:var(--danger);border-color:var(--danger);}
-
-/* ── EMPTY STATE ── */
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:60px 20px;text-align:center;}
-.empty-icon{font-size:64px;margin-bottom:16px;opacity:.3;}
-.empty-title{font-size:20px;font-weight:700;color:var(--muted2);margin-bottom:8px;}
-.empty-desc{font-size:14px;color:var(--muted);max-width:280px;}
-
-/* ── FAB ── */
-.fab{position:fixed;bottom:28px;right:24px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--indigo));border:none;color:#fff;font-size:26px;font-weight:300;cursor:pointer;box-shadow:0 4px 24px rgba(0,212,255,0.3);transition:.2s;z-index:200;display:flex;align-items:center;justify-content:center;}
-.fab:hover{transform:scale(1.08);box-shadow:0 6px 32px rgba(0,212,255,0.4);}
-.fab:active{transform:scale(.96);}
-
-/* ── MODALS ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(6,9,15,0.85);backdrop-filter:blur(8px);z-index:300;display:none;align-items:flex-end;justify-content:center;padding:0;}
-.modal-overlay.active{display:flex;}
-@media(min-width:600px){.modal-overlay{align-items:center;padding:20px;}}
-.modal-box{background:var(--s1);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;animation:slideUp .25s ease;}
-@media(min-width:600px){.modal-box{border-radius:var(--r);animation:fadeScale .2s ease;}}
-@keyframes slideUp{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-@keyframes fadeScale{from{transform:scale(.96);opacity:0;}to{transform:scale(1);opacity:1;}}
-.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 0;}
-.modal-title{font-size:18px;font-weight:800;}
-.modal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;line-height:1;transition:.2s;}
-.modal-close:hover{color:var(--text);}
-.modal-body{padding:20px 24px 28px;}
-
-/* ── FORM ── */
-.type-selector{display:flex;gap:8px;margin-bottom:20px;background:var(--bg);border-radius:var(--r2);padding:4px;}
-.type-btn{flex:1;padding:10px 8px;border:none;background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;border-radius:6px;cursor:pointer;transition:.2s;}
-.type-btn.active{background:var(--s3);color:var(--text);}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.form-grid .full{grid-column:1/-1;}
-.fields-section{display:none;}
-.fields-section.active{display:contents;}
-.form-divider{grid-column:1/-1;border:none;border-top:1px solid var(--border2);margin:4px 0;}
-.form-actions{display:flex;gap:10px;margin-top:8px;grid-column:1/-1;}
-.btn-save{flex:1;padding:13px;background:linear-gradient(135deg,var(--accent),var(--indigo));border:none;border-radius:var(--r2);color:#06090f;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;}
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fl{font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.9px;text-transform:uppercase;}
+.fi{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:12px 14px;color:var(--white);font-family:"DM Sans",sans-serif;font-size:14px;outline:none;transition:.2s;}
+.fi:focus{border-color:var(--ac);background:var(--s3);box-shadow:0 0 0 3px var(--acd),0 0 12px rgba(56,193,214,0.08);}
+.fi::placeholder{color:var(--muted);}
+.fi-wrap{position:relative;}
+.fi-wrap .fi{width:100%;padding-right:44px;}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted2);cursor:pointer;font-size:15px;padding:4px;}
+.auth-err{color:var(--err);font-size:12px;min-height:16px;text-align:center;margin-top:-4px;}
+.btn-ac{width:100%;padding:14px;margin-top:2px;background:var(--ac);border:none;border-radius:10px;color:#0a0a0a;font-family:"DM Sans",sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;box-shadow:0 4px 16px rgba(56,193,214,0.3);}
+.btn-ac:hover{opacity:.9;transform:translateY(-1px);}
+.auth-note{font-size:12px;color:var(--muted2);text-align:center;line-height:1.65;padding:10px 12px;background:rgba(255,255,255,0.04);border-radius:8px;border:1px solid var(--b);margin-top:2px;}
+header{background:var(--s1);border-bottom:1px solid var(--b);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.hlogo{display:flex;align-items:center;gap:10px;}
+.hlogo-icon{width:30px;height:30px;background:var(--s2);border:1px solid var(--b);border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.hlogo-text{font-family:"Playfair Display",serif;font-size:19px;font-weight:600;color:var(--white);}
+.hright{display:flex;align-items:center;gap:10px;}
+.upill{background:var(--s2);border:1px solid var(--b);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--muted2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.btn-out{background:none;border:1px solid var(--b);border-radius:8px;padding:6px 13px;color:var(--muted2);font-family:"DM Sans",sans-serif;font-size:12px;cursor:pointer;transition:.2s;}
+.btn-out:hover{border-color:rgba(248,113,113,0.4);color:var(--err);}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:18px 20px 0;}
+.stat{background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
+.stat:hover{border-color:var(--b2);}
+.stat.active{background:var(--s2);border-color:var(--ac);}
+.stat.active::after{content:"";position:absolute;bottom:0;left:15%;right:15%;height:2px;background:var(--ac);border-radius:2px;}
+.stat-n{display:block;font-family:"Playfair Display",serif;font-size:32px;font-weight:700;color:var(--white);line-height:1;}
+.stat-l{display:block;font-size:10px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.6px;margin-top:5px;}
+.toolbar{display:flex;gap:10px;padding:14px 20px;}
+.sw{flex:1;position:relative;}
+.sicon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted2);width:15px;height:15px;}
+.si{width:100%;background:var(--s1);border:1px solid var(--b);border-radius:10px;padding:10px 12px 10px 36px;color:var(--white);font-family:"DM Sans",sans-serif;font-size:13px;outline:none;transition:.2s;}
+.si:focus{border-color:var(--ac);}
+.si::placeholder{color:var(--muted);}
+.fsel{background:var(--s1);border:1px solid var(--b);border-radius:10px;padding:10px 13px;color:var(--muted2);font-family:"DM Sans",sans-serif;font-size:13px;outline:none;cursor:pointer;min-width:165px;}
+.fsel option{background:var(--s2);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;padding:0 20px 100px;}
+.ecard{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:16px;cursor:pointer;transition:.25s;position:relative;overflow:hidden;}
+.ecard:hover{border-color:var(--ac);transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,0.3);}
+.ecard::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac);opacity:0;transition:.2s;}
+.ecard:hover::before{opacity:1;}
+.etop{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.eico{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid var(--b);background:var(--s2);overflow:hidden;}
+.einfo{flex:1;min-width:0;}
+.ename{font-size:15px;font-weight:700;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.1px;}
+.esub{font-size:12px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.esec{font-family:"DM Mono",monospace;font-size:12px;color:var(--muted2);letter-spacing:2px;margin-top:5px;}
+.emeta{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.cbadge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;}
+.cat-Social{background:rgba(96,165,250,0.12);color:var(--cat-social);border:1px solid rgba(96,165,250,0.25);}
+.cat-Trabajo{background:rgba(167,139,250,0.12);color:var(--cat-trabajo);border:1px solid rgba(167,139,250,0.25);}
+.cat-Bancario{background:rgba(74,222,128,0.1);color:var(--cat-bancario);border:1px solid rgba(74,222,128,0.22);}
+.cat-Compras{background:rgba(251,146,60,0.12);color:var(--cat-compras);border:1px solid rgba(251,146,60,0.25);}
+.cat-Entretenimiento{background:rgba(244,114,182,0.12);color:var(--cat-entrete);border:1px solid rgba(244,114,182,0.25);}
+.cat-Otro{background:var(--s3);color:var(--muted2);border:1px solid var(--b);}
+.tbadge{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--goldd);color:var(--gold);border:1px solid rgba(201,168,76,0.15);}
+.eacts{display:flex;gap:6px;margin-top:14px;border-top:1px solid var(--b);padding-top:12px;}
+.eact{flex:1;padding:9px 4px;background:transparent;border:1px solid var(--b);border-radius:8px;color:var(--sub);font-size:12px;font-family:"DM Sans",sans-serif;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.eact:hover{color:var(--white);border-color:var(--b2);}
+.eact.cp:hover{color:var(--ac);border-color:var(--ac);}
+.eact.ed:hover{color:#60a5fa;border-color:rgba(96,165,250,0.3);}
+.eact.dl:hover{color:var(--err);border-color:rgba(248,113,113,0.3);}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:80px 20px;text-align:center;}
+.empty-ico{width:76px;height:76px;background:var(--s1);border:1px solid var(--b);border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:18px;}
+.empty-t{font-family:"Playfair Display",serif;font-size:21px;color:var(--muted2);margin-bottom:8px;}
+.empty-d{font-size:14px;color:var(--muted2);max-width:250px;line-height:1.6;}
+.fab{position:fixed;bottom:26px;right:22px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#38c1d6,#2aa8bc);border:none;color:#0a0a0a;font-size:28px;font-weight:900;cursor:pointer;transition:.25s;z-index:200;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(56,193,214,0.45),0 2px 8px rgba(0,0,0,0.3);line-height:1;}
+.fab:hover{transform:scale(1.07);}
+.fab:active{transform:scale(.95);}
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:300;display:none;align-items:flex-end;justify-content:center;}
+.moverlay.active{display:flex;}
+@media(min-width:600px){.moverlay{align-items:center;padding:20px;}}
+.mbox{background:var(--s1);border:1px solid var(--b2);border-radius:20px 20px 0 0;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;animation:sup .25s cubic-bezier(.16,1,.3,1);}
+@media(min-width:600px){.mbox{border-radius:20px;animation:fsc .2s cubic-bezier(.16,1,.3,1);}}
+@keyframes sup{from{transform:translateY(36px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+@keyframes fsc{from{transform:scale(.97);opacity:0;}to{transform:scale(1);opacity:1;}}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 0;}
+.mtitle{font-family:"Playfair Display",serif;font-size:19px;font-weight:600;color:var(--white);}
+.mclose{background:none;border:1px solid var(--b);color:var(--muted2);font-size:13px;cursor:pointer;padding:5px 10px;border-radius:7px;transition:.2s;}
+.mclose:hover{color:var(--white);}
+.mbody{padding:20px 24px 26px;}
+.type-sel{display:flex;gap:4px;margin-bottom:18px;background:var(--bg);border-radius:10px;padding:4px;border:1px solid var(--b);}
+.type-btn{flex:1;padding:9px 6px;border:none;background:transparent;color:var(--muted2);font-family:"DM Sans",sans-serif;font-size:13px;font-weight:500;border-radius:7px;cursor:pointer;transition:.2s;}
+.type-btn.active{background:var(--s3);color:var(--white);}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.fgrid .full{grid-column:1/-1;}
+.fsec{display:none;}
+.fsec.active{display:contents;}
+.fdiv{grid-column:1/-1;border:none;border-top:1px solid var(--b);margin:4px 0;}
+.factions{display:flex;gap:10px;margin-top:6px;grid-column:1/-1;}
+.btn-save{flex:1;padding:13px;background:var(--ac);border:none;border-radius:10px;color:#0a0a0a;font-family:"DM Sans",sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;}
 .btn-save:hover{opacity:.9;}
-.btn-cancel{padding:13px 20px;background:var(--s2);border:1px solid var(--border2);border-radius:var(--r2);color:var(--muted2);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:.2s;}
-.btn-cancel:hover{color:var(--text);}
-.gen-btn{padding:12px 14px;background:var(--s3);border:1px solid var(--border2);border-radius:var(--r2);color:var(--accent);font-size:13px;cursor:pointer;white-space:nowrap;font-family:'Syne',sans-serif;transition:.2s;}
-.gen-btn:hover{background:var(--accent-dim);}
-
-/* ── VIEW MODAL ── */
-.view-header-block{background:var(--s2);border-radius:var(--r);padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;}
-.view-icon-big{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
-.view-type-password .view-icon-big{background:rgba(16,185,129,0.15);}
-.view-type-card .view-icon-big{background:rgba(245,158,11,0.15);}
-.view-type-pin .view-icon-big{background:rgba(167,139,250,0.15);}
-.view-name{font-size:20px;font-weight:800;}
-.view-cat{font-size:12px;color:var(--muted2);margin-top:3px;}
-.view-fields{display:flex;flex-direction:column;gap:10px;}
-.view-field{background:var(--s2);border-radius:var(--r2);padding:12px 14px;}
-.view-field-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.view-field-val{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}
-.view-field-val .mono{font-size:15px;letter-spacing:1px;}
-.masked{letter-spacing:4px;font-size:18px;}
-.copy-inline{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;transition:.2s;margin-left:auto;}
-.copy-inline:hover{color:var(--accent);background:var(--accent-dim);}
-.reveal-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;transition:.2s;}
-.reveal-btn:hover{color:var(--text);}
-
-/* ── DEBIT CARD VISUAL ── */
-.card-visual{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);border-radius:16px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden;aspect-ratio:1.586;max-width:360px;margin-left:auto;margin-right:auto;}
-.card-visual::before{content:'';position:absolute;top:-40%;right:-20%;width:60%;height:160%;background:rgba(255,255,255,0.03);border-radius:50%;}
-.card-visual::after{content:'';position:absolute;bottom:-40%;left:-20%;width:60%;height:160%;background:rgba(255,255,255,0.03);border-radius:50%;}
-.card-chip{width:38px;height:30px;background:linear-gradient(135deg,#f0c060,#c8962c);border-radius:5px;margin-bottom:24px;}
-.card-number{font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:3px;color:rgba(255,255,255,0.9);margin-bottom:20px;}
-.card-bottom{display:flex;justify-content:space-between;align-items:flex-end;}
-.card-holder-label{font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
-.card-holder-name{font-size:13px;font-weight:700;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:1px;}
-.card-expiry-label{font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;text-align:right;}
-.card-expiry-val{font-family:'JetBrains Mono',monospace;font-size:14px;color:rgba(255,255,255,0.85);text-align:right;}
-.card-brand{position:absolute;top:20px;right:20px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;}
-
-/* ── PASSWORD GENERATOR ── */
-.gen-output{background:var(--bg);border-radius:var(--r2);padding:16px;display:flex;align-items:center;gap:12px;margin-bottom:16px;border:1px solid var(--border);}
-.gen-password{flex:1;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;word-break:break-all;color:var(--accent);}
-.gen-controls{display:flex;flex-direction:column;gap:14px;}
-.gen-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
-.gen-row label{font-size:13px;font-weight:600;color:var(--muted2);}
-.slider{flex:1;accent-color:var(--accent);cursor:pointer;}
-.len-val{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--accent);min-width:24px;text-align:right;}
-.checkbox-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.cb-item{display:flex;align-items:center;gap:8px;cursor:pointer;}
-.cb-item input{accent-color:var(--accent);cursor:pointer;}
-.cb-item span{font-size:13px;color:var(--muted2);}
-.strength-bar{height:4px;border-radius:2px;background:var(--s3);overflow:hidden;margin-top:4px;}
-.strength-fill{height:100%;border-radius:2px;transition:.3s;}
-
-/* ── DELETE MODAL ── */
-.del-modal-body{padding:24px;text-align:center;}
-.del-icon{font-size:48px;margin-bottom:12px;}
-.del-title{font-size:18px;font-weight:800;margin-bottom:8px;}
-.del-desc{font-size:14px;color:var(--muted2);margin-bottom:24px;}
-.del-actions{display:flex;gap:10px;justify-content:center;}
-.btn-danger{padding:12px 28px;background:var(--danger);border:none;border-radius:var(--r2);color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;}
-.btn-danger:hover{opacity:.85;}
-.btn-ghost{padding:12px 28px;background:var(--s2);border:1px solid var(--border2);border-radius:var(--r2);color:var(--muted2);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:.2s;}
-.btn-ghost:hover{color:var(--text);}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--s3);border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:500;white-space:nowrap;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast.ok{border-color:var(--ok);color:var(--ok);}
-.toast.err{border-color:var(--danger);color:var(--danger);}
-
-/* ── LOADING ── */
-.spinner-overlay{position:fixed;inset:0;background:rgba(6,9,15,0.7);z-index:400;display:none;align-items:center;justify-content:center;}
-.spinner-overlay.active{display:flex;}
-.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:6px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:var(--s3);border-radius:3px;}
-::-webkit-scrollbar-thumb:hover{background:var(--muted);}
-
-/* ── RESPONSIVE ── */
-@media(max-width:480px){
-  .form-grid{grid-template-columns:1fr;}
-  .stats-bar{gap:6px;padding:12px;}
-  .stat-chip{padding:10px 8px;}
-  .stat-num{font-size:18px;}
+.btn-cancel{padding:13px 18px;background:var(--s2);border:1px solid var(--b);border-radius:10px;color:var(--muted2);font-family:"DM Sans",sans-serif;font-size:14px;cursor:pointer;transition:.2s;}
+.btn-cancel:hover{color:var(--white);}
+.genbtn{padding:11px 13px;background:var(--s3);border:1px solid var(--b);border-radius:10px;color:var(--ac);font-size:13px;cursor:pointer;white-space:nowrap;font-family:"DM Sans",sans-serif;transition:.2s;}
+.genbtn:hover{background:var(--acd);}
+.app-label{
+  grid-column:1/-1;font-size:12px;font-weight:700;color:#0a0a0a;
+  letter-spacing:.8px;text-transform:uppercase;
+  padding:10px 14px;background:var(--ac);
+  border-radius:10px;margin:10px 0 4px;text-align:center;
 }
+.num-wrap{position:relative;}
+.num-wrap .fi{width:100%;padding-right:90px;}
+#card-brand-badge{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;height:26px;}
+.vhead{background:var(--s2);border-radius:12px;padding:18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;border:1px solid var(--b);}
+.vico{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:1px solid var(--b);background:var(--s3);overflow:hidden;}
+.vname{font-family:"Playfair Display",serif;font-size:19px;font-weight:600;color:var(--white);}
+.vcat{font-size:12px;color:var(--muted2);margin-top:2px;}
+.vfields{display:flex;flex-direction:column;gap:8px;}
+.vfield{background:var(--s2);border-radius:10px;padding:11px 13px;border:1px solid var(--b);}
+.vfl{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px;}
+.vfv{font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px;color:var(--white);}
+.copybtn{background:none;border:1px solid var(--b);color:var(--muted2);cursor:pointer;font-size:12px;padding:3px 8px;border-radius:6px;transition:.2s;margin-left:auto;}
+.copybtn:hover{color:var(--ac);border-color:var(--ac);}
+.revbtn{background:none;border:1px solid var(--b);color:var(--muted2);cursor:pointer;font-size:12px;padding:3px 8px;border-radius:6px;transition:.2s;}
+.revbtn:hover{color:var(--white);}
+.vsec-label{font-size:11px;font-weight:700;color:var(--ac);letter-spacing:.7px;text-transform:uppercase;padding:8px 0 4px;margin-top:4px;border-top:1px solid var(--b);}
+/* CARD VISUAL */
+.cvis{
+  background:linear-gradient(135deg,#1a237e 0%,#283593 20%,#1565c0 40%,#4a148c 70%,#6a1b9a 100%);
+  border-radius:18px;margin-bottom:14px;position:relative;overflow:hidden;
+  aspect-ratio:1.586;max-width:360px;margin-left:auto;margin-right:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  transition:box-shadow .2s;
+}
+.cvis::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 25% 20%,rgba(255,255,255,0.15),transparent 55%),radial-gradient(ellipse 50% 50% at 80% 80%,rgba(150,50,200,0.3),transparent 60%);pointer-events:none;}
+.cvis-body{position:absolute;inset:0;padding:20px 22px;display:flex;flex-direction:column;}
+.cvis-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cvis-bank{font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);text-transform:uppercase;letter-spacing:.8px;}
+.cvis-nfc{color:rgba(255,255,255,0.6);font-size:20px;}
+.cvis-mid{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.cchip{width:46px;height:36px;border-radius:6px;flex-shrink:0;background:linear-gradient(135deg,#f5e642 0%,#d4a800 25%,#f0d060 50%,#c89000 75%,#e8c840 100%);position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.5);}
+.cchip::before{content:"";position:absolute;top:33%;left:0;right:0;height:34%;background:rgba(100,70,0,0.25);}
+.cchip::after{content:"";position:absolute;top:0;bottom:0;left:33%;width:34%;background:rgba(100,70,0,0.2);}
+.cchip-inner{position:absolute;top:18%;left:18%;right:18%;bottom:18%;border:1.5px solid rgba(180,130,0,0.5);border-radius:3px;}
+.cvis-brand{display:flex;align-items:center;justify-content:center;}
+.cnum{font-family:"DM Mono",monospace;font-size:18px;letter-spacing:4px;color:rgba(255,255,255,0.92);margin-bottom:14px;text-shadow:0 1px 4px rgba(0,0,0,0.4);}
+.cvis-bot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:auto;}
+.chl{font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;}
+.chn{font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);text-transform:uppercase;letter-spacing:.5px;}
+.cev{font-family:"DM Mono",monospace;font-size:13px;color:rgba(255,255,255,0.9);text-align:right;}
+/* GENERATOR */
+.genout{background:var(--bg);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:14px;border:1px solid var(--b);}
+.genpass{flex:1;font-family:"DM Mono",monospace;font-size:14px;word-break:break-all;color:var(--ac);}
+.genctrl{display:flex;flex-direction:column;gap:13px;}
+.genrow{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.genrow label{font-size:13px;font-weight:500;color:var(--muted2);}
+.slider{flex:1;accent-color:var(--ac);cursor:pointer;}
+.lenval{font-family:"DM Mono",monospace;font-size:13px;color:var(--ac);min-width:24px;text-align:right;}
+.cbgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.cbi{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.cbi input{accent-color:var(--ac);cursor:pointer;}
+.cbi span{font-size:13px;color:var(--muted2);}
+.sbar{height:3px;border-radius:2px;background:var(--s3);overflow:hidden;margin-top:4px;}
+.sfill{height:100%;border-radius:2px;transition:.3s;}
+/* DELETE */
+.delbody{padding:26px;text-align:center;}
+.delico{font-size:42px;margin-bottom:12px;}
+.delt{font-family:"Playfair Display",serif;font-size:19px;color:var(--white);margin-bottom:8px;}
+.deld{font-size:14px;color:var(--muted2);margin-bottom:22px;line-height:1.6;}
+.delacts{display:flex;gap:10px;justify-content:center;}
+.btn-danger{padding:11px 26px;background:var(--err);border:none;border-radius:10px;color:#fff;font-family:"DM Sans",sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:.2s;}
+.btn-danger:hover{opacity:.85;}
+.btn-ghost{padding:11px 26px;background:var(--s2);border:1px solid var(--b);border-radius:10px;color:var(--muted2);font-family:"DM Sans",sans-serif;font-size:14px;cursor:pointer;transition:.2s;}
+.btn-ghost:hover{color:var(--white);}
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:9px 20px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:.28s;z-index:500;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:rgba(56,193,214,0.4);color:var(--ac);}
+.toast.err{border-color:rgba(248,113,113,0.3);color:var(--err);}
+.spin-wrap{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:400;display:none;align-items:center;justify-content:center;}
+.spin-wrap.active{display:flex;}
+.spinner{width:34px;height:34px;border:2px solid var(--b2);border-top-color:var(--ac);border-radius:50%;animation:sp .7s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+@keyframes splashPop{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+@keyframes splashFade{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+@keyframes checkAnim{0%{transform:scale(0);}60%{transform:scale(1.2);}100%{transform:scale(1);}}
+/* Password strength badge */
+.pw-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle;}
+.pw-weak{background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);}
+.pw-medium{background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);}
+.pw-strong{background:rgba(74,222,128,0.12);color:#4ade80;border:1px solid rgba(74,222,128,0.25);}
+.pw-dup{background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);}
+/* Copy checkmark */
+.toast-check{display:inline-block;animation:checkAnim .3s cubic-bezier(.16,1,.3,1);}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:3px;}
+@media(max-width:480px){.stats{gap:7px;padding:14px 14px 0;}.stat{padding:12px 8px;}.stat-n{font-size:22px;}.toolbar,.grid{padding-left:14px;padding-right:14px;}header{padding:0 14px;}.fgrid{grid-template-columns:1fr;}}
 </style>
 </head>
-<body>
-
-<!-- ═══════════════════ AUTH SCREEN ═══════════════════ -->
-<div id="screen-auth" class="screen active">
-  <div class="auth-bg"></div>
-  <div class="auth-container">
-    <div class="auth-logo">
-      <svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="42" height="42" rx="10" fill="url(#lg)"/>
-        <path d="M21 8C16.03 8 12 12.03 12 17v2.5H10V34h22V19.5h-2V17c0-4.97-4.03-9-9-9zm0 3c3.31 0 6 2.69 6 6v2.5H15V17c0-3.31 2.69-6 6-6zm0 11a3 3 0 0 1 1 5.83V31h-2v-3.17A3 3 0 0 1 21 22z" fill="white" opacity=".9"/>
-        <defs><linearGradient id="lg" x1="0" y1="0" x2="42" y2="42" gradientUnits="userSpaceOnUse"><stop stop-color="#00d4ff"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs>
-      </svg>
-      <span class="auth-logo-text">VaultKey</span>
+<body><div id="screen-splash" class="screen active" style="align-items:center;justify-content:center;background:var(--bg);">
+  <div id="splash-content" style="text-align:center;">
+    <div id="splash-icon" style="width:80px;height:80px;margin:0 auto 20px;background:var(--s1);border:2px solid var(--ac);border-radius:22px;display:flex;align-items:center;justify-content:center;animation:splashPop .6s cubic-bezier(.16,1,.3,1) forwards;">
+      <svg width="40" height="40" viewBox="0 0 28 28" fill="none"><path d="M14 2C9.58 2 6 5.58 6 10v2H4v14h20V12h-2v-2c0-4.42-3.58-8-8-8zm0 2.5c3.04 0 5.5 2.46 5.5 5.5v2H8.5v-2c0-3.04 2.46-5.5 5.5-5.5zm0 9.5a2.5 2.5 0 0 1 .75 4.88V21h-1.5v-2.12A2.5 2.5 0 0 1 14 14z" fill="#38c1d6"/></svg>
+    </div>
+    <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:600;color:#fff;animation:splashFade .8s .3s both;">VaultKey</div>
+    <div style="font-size:13px;color:var(--muted2);margin-top:8px;animation:splashFade .8s .5s both;">Gestor de contraseñas seguro</div>
+    <div style="margin-top:40px;animation:splashFade .8s .7s both;">
+      <div style="width:36px;height:36px;border:3px solid var(--b2);border-top-color:var(--ac);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto;"></div>
+    </div>
+  </div>
+</div>
+<div id="screen-auth" class="screen">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <div class="brand-icon"><svg width="32" height="32" viewBox="0 0 28 28" fill="none"><path d="M14 2C9.58 2 6 5.58 6 10v2H4v14h20V12h-2v-2c0-4.42-3.58-8-8-8zm0 2.5c3.04 0 5.5 2.46 5.5 5.5v2H8.5v-2c0-3.04 2.46-5.5 5.5-5.5zm0 9.5a2.5 2.5 0 0 1 .75 4.88V21h-1.5v-2.12A2.5 2.5 0 0 1 14 14z" fill="#38c1d6"/></svg></div>
+      <div class="brand-name">VaultKey</div>
+      <div class="brand-sub">Gestor de contraseñas seguro</div>
     </div>
     <div class="auth-card">
+      <div id="local-notice" class="local-notice" style="display:none">🖥️ Modo local</div>
       <div class="auth-tabs">
         <button class="auth-tab active" data-tab="login">Iniciar sesión</button>
         <button class="auth-tab" data-tab="register">Registrarse</button>
       </div>
-
-      <!-- LOGIN -->
       <div id="pane-login" class="tab-pane active">
-        <div class="field-group">
-          <label class="field-label">Email</label>
-          <input id="login-email" class="field-input" type="email" placeholder="tu@email.com" autocomplete="email">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Contraseña maestra</label>
-          <div class="field-input-wrap">
-            <input id="login-pass" class="field-input" type="password" placeholder="••••••••" autocomplete="current-password">
-            <button class="toggle-vis" data-target="login-pass">👁</button>
-          </div>
-        </div>
-        <p id="login-error" class="auth-error"></p>
-        <button id="btn-login" class="btn-primary">Entrar al Vault →</button>
+        <div class="fg"><label class="fl">Email</label><input id="login-email" class="fi" type="email" placeholder="tu@email.com" autocomplete="email"></div>
+        <div class="fg"><label class="fl">Contraseña maestra</label><div class="fi-wrap"><input id="login-pass" class="fi" type="password" placeholder="••••••••" autocomplete="current-password"><button class="eye" data-t="login-pass">👁</button></div></div>
+        <p id="login-err" class="auth-err"></p>
+        <button id="btn-login" class="btn-ac">Entrar al Vault →</button>
       </div>
-
-      <!-- REGISTER -->
       <div id="pane-register" class="tab-pane">
-        <div class="field-group">
-          <label class="field-label">Email</label>
-          <input id="reg-email" class="field-input" type="email" placeholder="tu@email.com" autocomplete="email">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Contraseña maestra</label>
-          <div class="field-input-wrap">
-            <input id="reg-pass" class="field-input" type="password" placeholder="Mín. 8 caracteres" autocomplete="new-password">
-            <button class="toggle-vis" data-target="reg-pass">👁</button>
-          </div>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Confirmar contraseña</label>
-          <div class="field-input-wrap">
-            <input id="reg-confirm" class="field-input" type="password" placeholder="Repetir contraseña" autocomplete="new-password">
-            <button class="toggle-vis" data-target="reg-confirm">👁</button>
-          </div>
-        </div>
-        <p id="reg-error" class="auth-error"></p>
-        <button id="btn-register" class="btn-primary">Crear cuenta →</button>
-        <p class="auth-note">⚠️ Tu contraseña maestra cifra todos los datos con AES-256. Si la olvidás, no hay recuperación.</p>
+        <div class="fg"><label class="fl">Email</label><input id="reg-email" class="fi" type="email" placeholder="tu@email.com" autocomplete="email"></div>
+        <div class="fg"><label class="fl">Contraseña maestra</label><div class="fi-wrap"><input id="reg-pass" class="fi" type="password" placeholder="Mín. 8 caracteres" autocomplete="new-password"><button class="eye" data-t="reg-pass">👁</button></div></div>
+        <div class="fg"><label class="fl">Confirmar</label><div class="fi-wrap"><input id="reg-confirm" class="fi" type="password" placeholder="Repetir contraseña" autocomplete="new-password"><button class="eye" data-t="reg-confirm">👁</button></div></div>
+        <p id="reg-err" class="auth-err"></p>
+        <button id="btn-register" class="btn-ac">Crear cuenta →</button>
+        <p class="auth-note">⚠️ Tu contraseña maestra cifra los datos con AES-256.</p>
       </div>
     </div>
   </div>
 </div>
-
-<!-- ═══════════════════ APP SCREEN ═══════════════════ -->
 <div id="screen-app" class="screen">
-
-  <!-- Header -->
   <header>
-    <div class="header-logo">
-      <svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="42" height="42" rx="10" fill="url(#lg2)"/>
-        <path d="M21 8C16.03 8 12 12.03 12 17v2.5H10V34h22V19.5h-2V17c0-4.97-4.03-9-9-9zm0 3c3.31 0 6 2.69 6 6v2.5H15V17c0-3.31 2.69-6 6-6zm0 11a3 3 0 0 1 1 5.83V31h-2v-3.17A3 3 0 0 1 21 22z" fill="white" opacity=".9"/>
-        <defs><linearGradient id="lg2" x1="0" y1="0" x2="42" y2="42" gradientUnits="userSpaceOnUse"><stop stop-color="#00d4ff"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs>
-      </svg>
-      <span class="header-logo-text">VaultKey</span>
+    <div class="hlogo">
+      <div class="hlogo-icon"><svg width="16" height="16" viewBox="0 0 28 28" fill="none"><path d="M14 2C9.58 2 6 5.58 6 10v2H4v14h20V12h-2v-2c0-4.42-3.58-8-8-8zm0 2.5c3.04 0 5.5 2.46 5.5 5.5v2H8.5v-2c0-3.04 2.46-5.5 5.5-5.5zm0 9.5a2.5 2.5 0 0 1 .75 4.88V21h-1.5v-2.12A2.5 2.5 0 0 1 14 14z" fill="#38c1d6"/></svg></div>
+      <span class="hlogo-text">VaultKey</span>
     </div>
-    <div class="header-right">
-      <span id="user-email" class="user-pill">—</span>
-      <button id="btn-logout" class="btn-logout">↩ Salir</button>
-    </div>
+    <div class="hright"><span id="user-email" class="upill">—</span><button id="btn-logout" class="btn-out">Salir</button></div>
   </header>
-
-  <!-- Stats -->
-  <div class="stats-bar">
-    <div class="stat-chip active" data-type="all">
-      <span class="stat-num" id="cnt-all">0</span>
-      <span class="stat-label">Total</span>
-    </div>
-    <div class="stat-chip" data-type="password">
-      <span class="stat-num" id="cnt-pass">0</span>
-      <span class="stat-label">🔑 Claves</span>
-    </div>
-    <div class="stat-chip" data-type="card">
-      <span class="stat-num" id="cnt-card">0</span>
-      <span class="stat-label">💳 Tarjetas</span>
-    </div>
-    <div class="stat-chip" data-type="pin">
-      <span class="stat-num" id="cnt-pin">0</span>
-      <span class="stat-label">🔢 PINs</span>
-    </div>
+  <div class="stats">
+    <div class="stat active" data-type="password"><span class="stat-n" id="cnt-pass">0</span><span class="stat-l">🔑 Claves</span></div>
+    <div class="stat" data-type="card"><span class="stat-n" id="cnt-card">0</span><span class="stat-l">💳 Tarjetas</span></div>
+    <div class="stat" data-type="pin"><span class="stat-n" id="cnt-pin">0</span><span class="stat-l">🔢 PINs</span></div>
   </div>
-
-  <!-- Toolbar -->
   <div class="toolbar">
-    <div class="search-wrap">
-      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-      </svg>
-      <input id="search-input" class="search-input" type="text" placeholder="Buscar en el vault…">
-    </div>
-    <select id="filter-cat" class="filter-select">
-      <option value="">Todas las categorías</option>
-      <option>Social</option><option>Trabajo</option><option>Bancario</option>
-      <option>Compras</option><option>Entretenimiento</option><option>Otro</option>
-    </select>
-  </div>
+    <div class="sw"><svg class="sicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="search-input" class="si" type="text" placeholder="Buscar en el vault…"></div>
 
-  <!-- Entries -->
-  <div id="entries-grid" class="entries-grid"></div>
-  <div id="empty-state" class="empty-state" style="display:none">
-    <div class="empty-icon">🔐</div>
-    <div class="empty-title">Tu vault está vacío</div>
-    <div class="empty-desc">Presioná el botón + para agregar contraseñas, tarjetas o PINs.</div>
   </div>
-
-  <!-- FAB -->
+  <div id="entries-grid" class="grid"></div>
+  <div id="empty-state" class="empty" style="display:none"><div class="empty-ico">🔐</div><div class="empty-t">Vault vacío</div><div class="empty-d">Presioná + para agregar entradas.</div></div>
   <button class="fab" id="fab">+</button>
 </div>
-
-<!-- ═══════════════════ MODAL: ADD/EDIT ═══════════════════ -->
-<div id="modal-add" class="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-header">
-      <span class="modal-title" id="modal-add-title">Nueva entrada</span>
-      <button class="modal-close" data-close="modal-add">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="type-selector" id="type-selector">
-        <button class="type-btn active" data-type="password">🔑 Contraseña</button>
-        <button class="type-btn" data-type="card">💳 Tarjeta</button>
-        <button class="type-btn" data-type="pin">🔢 PIN</button>
-      </div>
-
-      <div class="form-grid">
-        <!-- PASSWORD FIELDS -->
-        <div id="f-password" class="fields-section active">
-          <div class="field-group full">
-            <label class="field-label">Nombre del sitio / app *</label>
-            <input id="p-name" class="field-input" type="text" placeholder="ej. Gmail, Netflix…">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Usuario / Email</label>
-            <input id="p-user" class="field-input" type="text" placeholder="usuario@email.com">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Contraseña *</label>
-            <div class="field-input-wrap">
-              <input id="p-pass" class="field-input" type="password" placeholder="••••••••">
-              <button class="toggle-vis" data-target="p-pass">👁</button>
-            </div>
-          </div>
-          <div class="field-group full" style="display:flex;gap:8px;align-items:flex-end;">
-            <div style="flex:1" class="field-group">
-              <label class="field-label">URL</label>
-              <input id="p-url" class="field-input" type="text" placeholder="https://…">
-            </div>
-            <button class="gen-btn" id="open-gen">🎲 Generar</button>
-          </div>
+<div id="modal-add" class="moverlay">
+  <div class="mbox">
+    <div class="mhead"><span class="mtitle" id="modal-add-title">Nueva entrada</span><button class="mclose" data-close="modal-add">✕</button></div>
+    <div class="mbody">
+      <div class="type-sel"><button class="type-btn active" data-type="password">🔑 Contraseña</button><button class="type-btn" data-type="card">💳 Tarjeta</button><button class="type-btn" data-type="pin">🔢 PIN</button></div>
+      <div class="fgrid">
+        <div id="f-password" class="fsec active">
+          <div class="fg full"><label class="fl">Nombre *</label><input id="p-name" class="fi" type="text" placeholder="ej. Gmail, Netflix…"></div>
+          <div class="fg"><label class="fl">Usuario / Email</label><input id="p-user" class="fi" type="text" placeholder="usuario@email.com"></div>
+          <div class="fg"><label class="fl">Contraseña *</label><div class="fi-wrap"><input id="p-pass" class="fi" type="password" placeholder="••••••••"><button class="eye" data-t="p-pass">👁</button></div></div>
+          <div class="fg full" style="display:flex;gap:8px;align-items:flex-end;"><div class="fg" style="flex:1"><label class="fl">URL</label><input id="p-url" class="fi" type="text" placeholder="https://…"></div><button class="genbtn" id="open-gen">🎲 Generar</button></div>
         </div>
-
-        <!-- CARD FIELDS -->
-        <div id="f-card" class="fields-section">
-          <div class="field-group">
-            <label class="field-label">Banco / Emisor *</label>
-            <input id="c-bank" class="field-input" type="text" placeholder="ej. Bancop, Vision…">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Titular</label>
-            <input id="c-holder" class="field-input" type="text" placeholder="Nombre en la tarjeta">
-          </div>
-          <div class="field-group full">
-            <label class="field-label">Número de tarjeta *</label>
-            <input id="c-number" class="field-input mono" type="text" placeholder="0000 0000 0000 0000" maxlength="19">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Vencimiento</label>
-            <input id="c-expiry" class="field-input mono" type="text" placeholder="MM/AA" maxlength="5">
-          </div>
-          <div class="field-group">
-            <label class="field-label">CVV</label>
-            <input id="c-cvv" class="field-input mono" type="text" placeholder="•••" maxlength="4">
-          </div>
-          <div class="field-group">
-            <label class="field-label">PIN de tarjeta</label>
-            <input id="c-pin" class="field-input mono" type="password" placeholder="••••">
-          </div>
+        <div id="f-card" class="fsec">
+          <div class="fg"><label class="fl">Banco *</label><input id="c-bank" class="fi" type="text" placeholder="ej. BNF, Ekko…"></div>
+          <div class="fg"><label class="fl">Titular</label><input id="c-holder" class="fi" type="text" placeholder="Nombre en la tarjeta"></div>
+          <div class="fg"><label class="fl">Sitio web</label><input id="c-url" class="fi" type="text" placeholder="ej. bnf.gov.py"></div>
+          <div class="fg full"><label class="fl">Número *</label><div class="num-wrap"><input id="c-number" class="fi mono" type="text" placeholder="0000 0000 0000 0000" maxlength="19"><span id="card-brand-badge"></span></div></div>
+          <div class="fg"><label class="fl">Vencimiento</label><input id="c-expiry" class="fi mono" type="text" placeholder="MM/AA" maxlength="5"></div>
+          <div class="fg"><label class="fl">CVV</label><input id="c-cvv" class="fi mono" type="text" placeholder="•••" maxlength="4"></div>
+          <div class="fg"><label class="fl">PIN tarjeta</label><div class="fi-wrap"><input id="c-pin" class="fi mono" type="password" placeholder="••••"><button class="eye" data-t="c-pin">👁</button></div></div>
+          <div class="app-label">Acceso a la app del banco</div>
+          <div class="fg"><label class="fl">Usuario app</label><input id="c-appuser" class="fi" type="text" placeholder="Usuario o email"></div>
+          <div class="fg"><label class="fl">Contraseña app</label><div class="fi-wrap"><input id="c-apppass" class="fi" type="password" placeholder="••••••••"><button class="eye" data-t="c-apppass">👁</button></div></div>
+          <div class="fg"><label class="fl">PIN transaccional</label><div class="fi-wrap"><input id="c-pintrx" class="fi mono" type="password" placeholder="••••"><button class="eye" data-t="c-pintrx">👁</button></div></div>
+          <div class="fg"><label class="fl">Token / Clave dinámica</label><input id="c-token" class="fi" type="text" placeholder="ej. app Token, SMS…"></div>
         </div>
-
-        <!-- PIN FIELDS -->
-        <div id="f-pin" class="fields-section">
-          <div class="field-group full">
-            <label class="field-label">Nombre *</label>
-            <input id="pi-name" class="field-input" type="text" placeholder="ej. PIN celular, Caja fuerte…">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Código / PIN *</label>
-            <div class="field-input-wrap">
-              <input id="pi-code" class="field-input mono" type="password" placeholder="••••">
-              <button class="toggle-vis" data-target="pi-code">👁</button>
-            </div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Contexto</label>
-            <input id="pi-context" class="field-input" type="text" placeholder="¿Para qué es?">
-          </div>
+        <div id="f-pin" class="fsec">
+          <div class="fg full"><label class="fl">Nombre *</label><input id="pi-name" class="fi" type="text" placeholder="ej. PIN celular…"></div>
+          <div class="fg"><label class="fl">Código *</label><div class="fi-wrap"><input id="pi-code" class="fi mono" type="password" placeholder="••••"><button class="eye" data-t="pi-code">👁</button></div></div>
+          <div class="fg"><label class="fl">Contexto</label><input id="pi-context" class="fi" type="text" placeholder="¿Para qué es?"></div>
+          <div class="fg"><label class="fl">Sitio web</label><input id="pi-url" class="fi" type="text" placeholder="ej. app.com"></div>
         </div>
-
-        <hr class="form-divider">
-
-        <!-- COMMON FIELDS -->
-        <div class="field-group">
-          <label class="field-label">Categoría</label>
-          <select id="e-cat" class="field-input filter-select" style="padding:11px 14px;">
-            <option value="Otro">Otro</option>
-            <option value="Social">Social</option>
-            <option value="Trabajo">Trabajo</option>
-            <option value="Bancario">Bancario</option>
-            <option value="Compras">Compras</option>
-            <option value="Entretenimiento">Entretenimiento</option>
-          </select>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Etiquetas</label>
-          <input id="e-tags" class="field-input" type="text" placeholder="personal, trabajo (coma)">
-        </div>
-        <div class="field-group full">
-          <label class="field-label">Notas</label>
-          <textarea id="e-notes" class="field-input" rows="2" placeholder="Información adicional…" style="resize:vertical;"></textarea>
-        </div>
-
-        <div class="form-actions">
-          <button class="btn-cancel" data-close="modal-add">Cancelar</button>
-          <button id="btn-save" class="btn-save">Guardar entrada</button>
-        </div>
+        <hr class="fdiv">
+        <div class="fg"><label class="fl">Etiquetas</label><input id="e-tags" class="fi" type="text" placeholder="personal, trabajo (coma)"></div>
+        <div class="fg full"><label class="fl">Notas</label><textarea id="e-notes" class="fi" rows="2" placeholder="Información adicional…" style="resize:vertical;"></textarea></div>
+        <div class="factions"><button class="btn-cancel" data-close="modal-add">Cancelar</button><button id="btn-save" class="btn-save">Guardar entrada</button></div>
       </div>
     </div>
   </div>
 </div>
-
-<!-- ═══════════════════ MODAL: VIEW ═══════════════════ -->
-<div id="modal-view" class="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-header">
-      <span class="modal-title">Detalle</span>
-      <button class="modal-close" data-close="modal-view">✕</button>
-    </div>
-    <div class="modal-body" id="view-body"></div>
-  </div>
-</div>
-
-<!-- ═══════════════════ MODAL: GENERATOR ═══════════════════ -->
-<div id="modal-gen" class="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-header">
-      <span class="modal-title">🎲 Generador de contraseñas</span>
-      <button class="modal-close" data-close="modal-gen">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="gen-output">
-        <span id="gen-result" class="gen-password">—</span>
-        <button id="btn-copy-gen" title="Copiar" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;">📋</button>
-      </div>
-      <div class="strength-bar"><div id="strength-fill" class="strength-fill" style="width:0%"></div></div>
-      <br>
-      <div class="gen-controls">
-        <div class="gen-row">
-          <label>Longitud</label>
-          <input id="gen-length" type="range" class="slider" min="6" max="64" value="16">
-          <span id="gen-len-val" class="len-val">16</span>
-        </div>
-        <div class="checkbox-grid">
-          <label class="cb-item"><input type="checkbox" id="cb-upper" checked><span>Mayúsculas (A–Z)</span></label>
-          <label class="cb-item"><input type="checkbox" id="cb-lower" checked><span>Minúsculas (a–z)</span></label>
-          <label class="cb-item"><input type="checkbox" id="cb-num" checked><span>Números (0–9)</span></label>
-          <label class="cb-item"><input type="checkbox" id="cb-sym"><span>Símbolos (!@#…)</span></label>
-        </div>
-        <button id="btn-regen" class="btn-save" style="margin-top:4px;">↻ Regenerar</button>
-        <button id="btn-use-pass" class="btn-save" style="background:linear-gradient(135deg,var(--ok),#059669);">✓ Usar esta contraseña</button>
+<div id="modal-view" class="moverlay"><div class="mbox"><div class="mhead"><span class="mtitle">Detalle</span><button class="mclose" data-close="modal-view">✕</button></div><div class="mbody" id="view-body"></div></div></div>
+<div id="modal-gen" class="moverlay">
+  <div class="mbox">
+    <div class="mhead"><span class="mtitle">Generador de contraseñas</span><button class="mclose" data-close="modal-gen">✕</button></div>
+    <div class="mbody">
+      <div class="genout"><span id="gen-result" class="genpass mono">—</span><button id="btn-copy-gen" style="background:none;border:1px solid var(--b);color:var(--muted2);cursor:pointer;font-size:13px;padding:5px 9px;border-radius:7px;">📋</button></div>
+      <div class="sbar"><div id="strength-fill" class="sfill" style="width:0%"></div></div><br>
+      <div class="genctrl">
+        <div class="genrow"><label>Longitud</label><input id="gen-length" type="range" class="slider" min="6" max="64" value="16"><span id="gen-len-val" class="lenval mono">16</span></div>
+        <div class="cbgrid"><label class="cbi"><input type="checkbox" id="cb-upper" checked><span>Mayúsculas</span></label><label class="cbi"><input type="checkbox" id="cb-lower" checked><span>Minúsculas</span></label><label class="cbi"><input type="checkbox" id="cb-num" checked><span>Números</span></label><label class="cbi"><input type="checkbox" id="cb-sym"><span>Símbolos</span></label></div>
+        <button id="btn-regen" class="btn-save" style="margin-top:2px;">↻ Regenerar</button>
+        <button id="btn-use-pass" class="btn-save" style="background:#4ade80;color:#0a0a0a;">✓ Usar esta contraseña</button>
       </div>
     </div>
   </div>
 </div>
-
-<!-- ═══════════════════ MODAL: DELETE ═══════════════════ -->
-<div id="modal-del" class="modal-overlay">
-  <div class="modal-box" style="max-width:380px;">
-    <div class="del-modal-body">
-      <div class="del-icon">🗑️</div>
-      <div class="del-title">¿Eliminar entrada?</div>
-      <div class="del-desc">Esta acción no se puede deshacer. La entrada será eliminada permanentemente.</div>
-      <div class="del-actions">
-        <button class="btn-ghost" data-close="modal-del">Cancelar</button>
-        <button id="btn-confirm-del" class="btn-danger">Eliminar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Toast + Spinner -->
+<div id="modal-del" class="moverlay"><div class="mbox" style="max-width:370px;"><div class="delbody"><div class="delico">🗑️</div><div class="delt">¿Eliminar entrada?</div><div class="deld">Esta acción no se puede deshacer.</div><div class="delacts"><button class="btn-ghost" data-close="modal-del">Cancelar</button><button id="btn-confirm-del" class="btn-danger">Eliminar</button></div></div></div></div>
 <div id="toast" class="toast"></div>
-<div id="spinner" class="spinner-overlay"><div class="spinner"></div></div>
+<div id="spinner" class="spin-wrap"><div class="spinner"></div></div>
 
-<!-- Firebase + CryptoJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
-
 <script>
-// ═══════════════════════════════════════════════════
-// 🔧 CONFIGURACIÓN FIREBASE — REEMPLAZÁ ESTOS VALORES
-// ═══════════════════════════════════════════════════
-const firebaseConfig = {
-  apiKey:            "AIzaSyALmiVLWZrO4BgCRkO449bEkepdM1aM2e0",
-  authDomain:        "codepassxx.firebaseapp.com",
-  projectId:         "codepassxx",
-  storageBucket:     "codepassxx.firebasestorage.app",
-  messagingSenderId: "463002309758",
-  appId:             "1:463002309758:web:89fe9fa43749bbe82b342f",
-  measurementId:     "G-SFKYFRFP17"
-};
-// ═══════════════════════════════════════════════════
+const IS_LOCAL = location.protocol === 'file:';
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db   = firebase.firestore();
+// ── SPLASH SCREEN ──
+setTimeout(function() {
+  var splash = document.getElementById('screen-splash');
+  var auth   = document.getElementById('screen-auth');
+  splash.style.transition = 'opacity .4s ease';
+  splash.style.opacity = '0';
+  setTimeout(function() {
+    splash.classList.remove('active');
+    auth.classList.add('active');
+  }, 400);
+}, 1800);
+if (IS_LOCAL) document.getElementById('local-notice').style.display = 'block';
 
-// ── STATE ──
-let encKey     = null;
-let vault      = [];
-let filterType = 'all';
-let filterCat  = '';
-let searchQ    = '';
-let editingId  = null;
-let deleteId   = null;
-let currentType= 'password';
-
-// ── CRYPTO ──
-const deriveKey = (pass, uid) =>
-  CryptoJS.PBKDF2(pass, uid, { keySize: 256/32, iterations: 12000 }).toString();
-
-const encrypt = obj =>
-  CryptoJS.AES.encrypt(JSON.stringify(obj), encKey).toString();
-
-const decrypt = cipher => {
-  const b = CryptoJS.AES.decrypt(cipher, encKey);
-  return JSON.parse(b.toString(CryptoJS.enc.Utf8));
+const fbCfg = {
+  apiKey:"AIzaSyALmiVLWZrO4BgCRkO449bEkepdM1aM2e0",
+  authDomain:"codepassxx.firebaseapp.com",
+  projectId:"codepassxx",
+  storageBucket:"codepassxx.firebasestorage.app",
+  messagingSenderId:"463002309758",
+  appId:"1:463002309758:web:89fe9fa43749bbe82b342f"
 };
 
-// ── UI HELPERS ──
-const $ = id => document.getElementById(id);
-const showScreen = id => {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  $(id).classList.add('active');
-};
-const spin = v => $('spinner').classList.toggle('active', v);
-let toastTimer;
-const toast = (msg, type='ok') => {
-  const t = $('toast');
-  t.textContent = msg;
-  t.className = `toast show ${type}`;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
-};
-const openModal  = id => $(id).classList.add('active');
-const closeModal = id => $(id).classList.remove('active');
-const setError   = (id, msg) => { $(id).textContent = msg; };
+let AUTH, DB, TS;
 
-// ── AUTH ──
-document.querySelectorAll('.auth-tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    $(`pane-${btn.dataset.tab}`).classList.add('active');
+function makeLocalDB() {
+  let _u = null;
+  AUTH = {
+    signInWithEmailAndPassword: async (email, pw) => {
+      const U = JSON.parse(localStorage.getItem('vk_u')||'{}');
+      if (!U[email]) throw {code:'auth/user-not-found'};
+      if (U[email].pw !== pw) throw {code:'auth/wrong-password'};
+      _u = {uid:U[email].uid, email}; return {user:_u};
+    },
+    createUserWithEmailAndPassword: async (email, pw) => {
+      const U = JSON.parse(localStorage.getItem('vk_u')||'{}');
+      if (U[email]) throw {code:'auth/email-already-in-use'};
+      const uid = 'loc_'+Math.random().toString(36).slice(2);
+      U[email]={uid,pw}; localStorage.setItem('vk_u',JSON.stringify(U));
+      _u={uid,email}; return {user:_u};
+    },
+    signOut: async () => { _u=null; },
+    get currentUser(){return _u;}
+  };
+  DB = {
+    collection: () => ({
+      doc: (uid) => ({
+        collection: () => ({
+          orderBy: () => ({
+            get: async () => {
+              const d = JSON.parse(localStorage.getItem('vk_v_'+uid)||'[]');
+              return { forEach: (fn) => d.forEach(x => fn({id:x.id, data:()=>x})) };
+            }
+          }),
+          add: async (row) => {
+            const k='vk_v_'+uid, d=JSON.parse(localStorage.getItem(k)||'[]');
+            const id='l'+Date.now();
+            d.unshift({...row,id,updatedAt:Date.now(),createdAt:Date.now()});
+            localStorage.setItem(k,JSON.stringify(d)); return {id};
+          },
+          doc: (eid) => ({
+            update: async (row) => {
+              const k='vk_v_'+uid, d=JSON.parse(localStorage.getItem(k)||'[]');
+              const i=d.findIndex(x=>x.id===eid);
+              if(i>-1) d[i]={...d[i],...row,updatedAt:Date.now()};
+              localStorage.setItem(k,JSON.stringify(d));
+            },
+            delete: async () => {
+              const k='vk_v_'+uid, d=JSON.parse(localStorage.getItem(k)||'[]');
+              localStorage.setItem(k,JSON.stringify(d.filter(x=>x.id!==eid)));
+            }
+          })
+        })
+      })
+    })
+  };
+  TS = ()=>Date.now();
+}
+
+if (IS_LOCAL) {
+  makeLocalDB();
+} else {
+  try {
+    firebase.initializeApp(fbCfg);
+    AUTH = firebase.auth();
+    DB   = firebase.firestore();
+    TS   = ()=>firebase.firestore.FieldValue.serverTimestamp();
+  } catch(e) {
+    console.warn('Firebase no disponible:', e.message);
+    document.getElementById('local-notice').style.display = 'block';
+    document.getElementById('local-notice').textContent = '\u26a0\ufe0f Sin conexi\u00f3n \u2014 usando almacenamiento local';
+    makeLocalDB();
+  }
+}
+
+let encKey=null, vault=[], fType='password', fCat='', fQ='', editId=null, delId=null, curT='password';
+const dk  = (pw,uid) => CryptoJS.PBKDF2(pw,uid,{keySize:256/32,iterations:12000}).toString();
+const ENC = obj => CryptoJS.AES.encrypt(JSON.stringify(obj),encKey).toString();
+const DEC = c => { const b=CryptoJS.AES.decrypt(c,encKey); return JSON.parse(b.toString(CryptoJS.enc.Utf8)); };
+const $    = id => document.getElementById(id);
+const SS   = id => { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); };
+const spin = v  => $('spinner').classList.toggle('active',v);
+let _tt;
+const toast = (msg, t='ok') => {
+  const el=$('toast');
+  if(t==='ok') {
+    el.innerHTML='<span class="toast-check">&#x2713;</span> '+msg;
+    // Haptic feedback
+    if(navigator.vibrate) navigator.vibrate(40);
+  } else {
+    el.innerHTML=msg;
+  }
+  el.className='toast show '+t;
+  clearTimeout(_tt);
+  _tt=setTimeout(()=>el.classList.remove('show'),2500);
+};
+const openM  = id => $(id).classList.add('active');
+const closeM = id => $(id).classList.remove('active');
+const setErr = (id,m) => $(id).textContent=m;
+
+document.querySelectorAll('.auth-tab').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.auth-tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    $('pane-'+b.dataset.tab).classList.add('active');
   });
 });
 
 $('btn-login').addEventListener('click', async () => {
-  const email = $('login-email').value.trim();
-  const pass  = $('login-pass').value;
-  if (!email || !pass) { setError('login-error','Completá todos los campos.'); return; }
-  setError('login-error','');
-  spin(true);
+  const email=$('login-email').value.trim(), pw=$('login-pass').value;
+  if (!email||!pw) { setErr('login-err','Completá todos los campos.'); return; }
+  setErr('login-err',''); spin(true);
   try {
-    const cred = await auth.signInWithEmailAndPassword(email, pass);
-    encKey = deriveKey(pass, cred.user.uid);
-    await loadVault(cred.user.uid);
-    $('user-email').textContent = email;
-    showScreen('screen-app');
+    const c=await AUTH.signInWithEmailAndPassword(email,pw);
+    encKey=dk(pw,c.user.uid); await loadVault(c.user.uid);
+    $('user-email').textContent=email; SS('screen-app');
   } catch(e) {
-    const msgs = {
-      'auth/user-not-found':'Usuario no encontrado.',
-      'auth/wrong-password':'Contraseña incorrecta.',
-      'auth/invalid-email':'Email inválido.',
-      'auth/invalid-credential':'Email o contraseña incorrectos.'
-    };
-    setError('login-error', msgs[e.code] || e.message);
+    const m={'auth/user-not-found':'Usuario no encontrado.','auth/wrong-password':'Contraseña incorrecta.','auth/invalid-email':'Email inválido.','auth/invalid-credential':'Email o contraseña incorrectos.'};
+    setErr('login-err',m[e.code]||e.message);
   } finally { spin(false); }
 });
 
 $('btn-register').addEventListener('click', async () => {
-  const email = $('reg-email').value.trim();
-  const pass  = $('reg-pass').value;
-  const conf  = $('reg-confirm').value;
-  if (!email || !pass) { setError('reg-error','Completá todos los campos.'); return; }
-  if (pass.length < 8)  { setError('reg-error','Mín. 8 caracteres.'); return; }
-  if (pass !== conf)    { setError('reg-error','Las contraseñas no coinciden.'); return; }
-  setError('reg-error','');
-  spin(true);
+  const email=$('reg-email').value.trim(), pw=$('reg-pass').value, cf=$('reg-confirm').value;
+  if (!email||!pw) { setErr('reg-err','Completá todos los campos.'); return; }
+  if (pw.length<8) { setErr('reg-err','Mín. 8 caracteres.'); return; }
+  if (pw!==cf)     { setErr('reg-err','Las contraseñas no coinciden.'); return; }
+  setErr('reg-err',''); spin(true);
   try {
-    const cred = await auth.createUserWithEmailAndPassword(email, pass);
-    encKey = deriveKey(pass, cred.user.uid);
-    vault  = [];
-    $('user-email').textContent = email;
-    renderEntries();
-    updateCounts();
-    showScreen('screen-app');
+    const c=await AUTH.createUserWithEmailAndPassword(email,pw);
+    encKey=dk(pw,c.user.uid); vault=[];
+    renderEntries(); updateCounts();
+    $('user-email').textContent=email; SS('screen-app');
   } catch(e) {
-    const msgs = {
-      'auth/email-already-in-use':'El email ya está registrado.',
-      'auth/invalid-email':'Email inválido.',
-      'auth/weak-password':'Contraseña muy débil.'
-    };
-    setError('reg-error', msgs[e.code] || e.message);
+    const m={'auth/email-already-in-use':'Email ya registrado.','auth/invalid-email':'Email inválido.','auth/weak-password':'Contraseña muy débil.'};
+    setErr('reg-err',m[e.code]||e.message);
   } finally { spin(false); }
 });
 
 $('btn-logout').addEventListener('click', async () => {
-  await auth.signOut();
-  encKey = null; vault = [];
+  await AUTH.signOut(); encKey=null; vault=[];
   $('login-email').value=''; $('login-pass').value='';
-  setError('login-error','');
-  showScreen('screen-auth');
+  setErr('login-err',''); SS('screen-auth');
 });
 
-// ── VAULT CRUD ──
 async function loadVault(uid) {
-  const snap = await db.collection('vaults').doc(uid).collection('entries')
-    .orderBy('updatedAt','desc').get();
-  vault = [];
-  snap.forEach(doc => {
-    try {
-      const plain = decrypt(doc.data().enc);
-      vault.push({ id:doc.id, type:doc.data().type, category:doc.data().cat, ...plain });
-    } catch { console.warn('Skipped entry:', doc.id); }
+  const s=await DB.collection('vaults').doc(uid).collection('entries').orderBy('updatedAt','desc').get();
+  vault=[];
+  s.forEach(doc => {
+    try { const p=DEC(doc.data().enc); vault.push({id:doc.id,type:doc.data().type,category:doc.data().cat,...p}); }
+    catch { console.warn('skip',doc.id); }
   });
-  renderEntries();
-  updateCounts();
+  renderEntries(); updateCounts();
 }
 
-async function saveEntry(entryData) {
-  const uid  = auth.currentUser.uid;
-  const type = currentType;
-  const plain = buildPlainObj(type, entryData);
-  const row   = {
-    type, cat: entryData.category || 'Otro',
-    enc: encrypt(plain),
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
+async function saveEntry(d) {
+  const uid=AUTH.currentUser.uid, type=curT, plain=buildPlain(type,d);
+  const row={type,cat:d.category||'Otro',enc:ENC(plain),updatedAt:TS()};
   spin(true);
   try {
-    if (editingId) {
-      await db.collection('vaults').doc(uid).collection('entries').doc(editingId).update(row);
-      const idx = vault.findIndex(v => v.id === editingId);
-      if (idx > -1) vault[idx] = { id:editingId, type, category:row.cat, ...plain };
-      toast('Entrada actualizada ✓');
+    if (editId) {
+      await DB.collection('vaults').doc(uid).collection('entries').doc(editId).update(row);
+      const i=vault.findIndex(v=>v.id===editId);
+      if(i>-1) vault[i]={id:editId,type,category:row.cat,...plain};
+      toast('Entrada actualizada \u2713');
     } else {
-      row.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-      const ref = await db.collection('vaults').doc(uid).collection('entries').add(row);
-      vault.unshift({ id:ref.id, type, category:row.cat, ...plain });
-      toast('Entrada guardada ✓');
+      row.createdAt=TS();
+      const ref=await DB.collection('vaults').doc(uid).collection('entries').add(row);
+      vault.unshift({id:ref.id,type,category:row.cat,...plain});
+      toast('Entrada guardada \u2713');
     }
-    renderEntries();
-    updateCounts();
-    closeModal('modal-add');
-  } catch(e) { toast('Error al guardar: '+e.message,'err'); }
-  finally { spin(false); }
-}
-
-async function deleteEntry(id) {
-  const uid = auth.currentUser.uid;
-  spin(true);
-  try {
-    await db.collection('vaults').doc(uid).collection('entries').doc(id).delete();
-    vault = vault.filter(v => v.id !== id);
-    renderEntries(); updateCounts();
-    toast('Entrada eliminada');
-    closeModal('modal-del');
+    renderEntries(); updateCounts(); closeM('modal-add');
   } catch(e) { toast('Error: '+e.message,'err'); }
   finally { spin(false); }
 }
 
-function buildPlainObj(type, d) {
-  if (type==='password') return { name:d.name, username:d.username, password:d.password, url:d.url, tags:d.tags, notes:d.notes };
-  if (type==='card')     return { bankName:d.bankName, cardHolder:d.cardHolder, cardNumber:d.cardNumber, expiry:d.expiry, cvv:d.cvv, cardPin:d.cardPin, tags:d.tags, notes:d.notes };
-  if (type==='pin')      return { name:d.name, code:d.code, context:d.context, tags:d.tags, notes:d.notes };
+async function deleteEntry(id) {
+  const uid=AUTH.currentUser.uid; spin(true);
+  try {
+    await DB.collection('vaults').doc(uid).collection('entries').doc(id).delete();
+    vault=vault.filter(v=>v.id!==id);
+    renderEntries(); updateCounts(); toast('Entrada eliminada'); closeM('modal-del');
+  } catch(e) { toast('Error: '+e.message,'err'); }
+  finally { spin(false); }
 }
 
-// ── RENDER ──
+function buildPlain(t,d) {
+  if(t==='password') return {name:d.name,username:d.username,password:d.password,url:d.url,tags:d.tags,notes:d.notes};
+  if(t==='card')     return {bankName:d.bankName,cardHolder:d.cardHolder,cardNumber:d.cardNumber,expiry:d.expiry,cvv:d.cvv,cardPin:d.cardPin,appUser:d.appUser,appPass:d.appPass,pinTrx:d.pinTrx,token:d.token,siteUrl:d.siteUrl,tags:d.tags,notes:d.notes};
+  if(t==='pin')      return {name:d.name,code:d.code,context:d.context,siteUrl:d.siteUrl,tags:d.tags,notes:d.notes};
+}
+
 function getFiltered() {
   return vault.filter(e => {
-    if (filterType !== 'all' && e.type !== filterType) return false;
-    if (filterCat && e.category !== filterCat) return false;
-    if (searchQ) {
-      const q = searchQ.toLowerCase();
-      const hay = [e.name||e.bankName, e.username, e.cardHolder, e.category, e.context, ...(e.tags||[])].join(' ').toLowerCase();
-      if (!hay.includes(q)) return false;
+    if(fType!=='all'&&e.type!==fType) return false;
+    if(fCat&&e.category!==fCat) return false;
+    if(fQ) {
+      const q=fQ.toLowerCase();
+      const h=[e.name||e.bankName,e.username,e.cardHolder,e.category,e.context,...(e.tags||[])].join(' ').toLowerCase();
+      if(!h.includes(q)) return false;
     }
     return true;
   });
 }
 
 function renderEntries() {
-  const list = getFiltered();
-  const grid = $('entries-grid');
-  const emp  = $('empty-state');
-  grid.innerHTML = '';
-  if (!list.length) { emp.style.display='flex'; return; }
-  emp.style.display = 'none';
+  const list=getFiltered(), grid=$('entries-grid'), emp=$('empty-state');
+  grid.innerHTML='';
+  if(!list.length) { emp.style.display='flex'; return; }
+  emp.style.display='none';
   list.forEach(e => {
-    const el = document.createElement('div');
-    el.className = 'entry-card'; el.dataset.type = e.type; el.dataset.id = e.id;
-    el.innerHTML = cardHTML(e);
-    grid.appendChild(el);
+    const el=document.createElement('div');
+    el.className='ecard'; el.dataset.type=e.type; el.dataset.id=e.id;
+    el.innerHTML=cardHTML(e); grid.appendChild(el);
   });
-}
-
-const mask = str => str ? '•'.repeat(Math.min(str.length, 10)) : '—';
-const maskCard = n => n ? '•••• •••• •••• ' + n.replace(/\s/g,'').slice(-4) : '—';
-
-function cardHTML(e) {
-  let icon, title, sub, secret;
-  if (e.type==='password') { icon='🔑'; title=e.name||'Sin nombre'; sub=e.username||e.url||'—'; secret=mask(e.password); }
-  if (e.type==='card')     { icon='💳'; title=e.bankName||'Tarjeta'; sub=e.cardHolder||'—'; secret=maskCard(e.cardNumber); }
-  if (e.type==='pin')      { icon='🔢'; title=e.name||'PIN'; sub=e.context||'—'; secret=mask(e.code); }
-  const tags = (e.tags||[]).filter(Boolean).slice(0,3).map(t=>`<span class="tag-badge">${t}</span>`).join('');
-  return `
-    <div class="entry-top">
-      <div class="entry-icon">${icon}</div>
-      <div class="entry-info">
-        <div class="entry-name">${title}</div>
-        <div class="entry-sub">${sub}</div>
-        <div class="entry-secret mono">${secret}</div>
-      </div>
-    </div>
-    <div class="entry-meta">
-      <span class="cat-badge">${e.category||'Otro'}</span>${tags}
-    </div>
-    <div class="entry-actions">
-      <button class="btn-action copy" data-id="${e.id}" data-action="copy">📋 Copiar</button>
-      <button class="btn-action" data-id="${e.id}" data-action="view">👁 Ver</button>
-      <button class="btn-action edit" data-id="${e.id}" data-action="edit">✏️</button>
-      <button class="btn-action del" data-id="${e.id}" data-action="delete">🗑</button>
-    </div>`;
 }
 
 function updateCounts() {
-  $('cnt-all').textContent  = vault.length;
-  $('cnt-pass').textContent = vault.filter(e=>e.type==='password').length;
-  $('cnt-card').textContent = vault.filter(e=>e.type==='card').length;
-  $('cnt-pin').textContent  = vault.filter(e=>e.type==='pin').length;
+  $('cnt-pass').textContent=vault.filter(e=>e.type==='password').length;
+  $('cnt-card').textContent=vault.filter(e=>e.type==='card').length;
+  $('cnt-pin').textContent=vault.filter(e=>e.type==='pin').length;
 }
 
-// ── CARD ACTIONS ──
+function getDomain(entry) {
+  const raw=entry.siteUrl||entry.url||'';
+  return raw.replace(/https?:\/\//,'').replace(/\/.*/,'').trim();
+}
+
+function faviconImg(entry, fallback) {
+  const domain=getDomain(entry);
+  if(!domain) return null;
+  const url='https://www.google.com/s2/favicons?domain='+domain+'&sz=128';
+  const div=document.createElement('div');
+  div.className='eico'; div.style.cssText='padding:4px;background:#fff;';
+  const img=document.createElement('img');
+  img.src=url; img.style.cssText='width:36px;height:36px;object-fit:contain;border-radius:4px;display:block;';
+  img.onerror=function(){ this.parentElement.style.background=''; this.parentElement.style.padding=''; this.parentElement.innerHTML=fallback; };
+  div.appendChild(img);
+  return div.outerHTML;
+}
+
+function faviconImgView(entry, fallback) {
+  const domain=getDomain(entry);
+  if(!domain) return null;
+  const url='https://www.google.com/s2/favicons?domain='+domain+'&sz=128';
+  const div=document.createElement('div');
+  div.className='vico'; div.style.cssText='padding:6px;background:#fff;';
+  const img=document.createElement('img');
+  img.src=url; img.style.cssText='width:40px;height:40px;object-fit:contain;border-radius:5px;display:block;';
+  img.onerror=function(){ this.parentElement.style.background=''; this.parentElement.style.padding=''; this.parentElement.innerHTML=fallback; };
+  div.appendChild(img);
+  return div.outerHTML;
+}
+
+const mask  = s => s ? '\u2022'.repeat(Math.min(s.length,10)) : '\u2014';
+const maskC = n => n ? '\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 '+n.replace(/\s/g,'').slice(-4) : '\u2014';
+
+function cardHTML(e) {
+  let ico,ttl,sub,sec;
+  if(e.type==='password') { ico='\ud83d\udd11'; ttl=e.name||'Sin nombre'; sub=e.username||'\u2014'; sec=mask(e.password); }
+  if(e.type==='card')     { ico='\ud83d\udcb3'; ttl=e.bankName||'Tarjeta'; sub=e.cardHolder||'\u2014'; sec=maskC(e.cardNumber); }
+  if(e.type==='pin')      { ico='\ud83d\udd22'; ttl=e.name||'PIN'; sub=e.context||'\u2014'; sec=mask(e.code); }
+  const tags=(e.tags||[]).filter(Boolean).slice(0,3).map(t=>'<span class="tbadge">'+t+'</span>').join('');
+  const icoHTML=faviconImg(e,ico)||'<div class="eico">'+ico+'</div>';
+  var badge = e.type==='password' ? pwBadge(e.password, e.id) : '';
+  return '<div class="etop">'+icoHTML+'<div class="einfo"><div class="ename">'+ttl+'</div><div class="esub">'+sub+'</div>'+(badge?'<div style="margin-top:4px;">'+badge+'</div>':'')+'</div></div>'
+    +(tags?'<div class="emeta">'+tags+'</div>':'')
+    +'<div class="eacts">'
+    +'<button class="eact cp" data-id="'+e.id+'" data-action="copy"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar</button>'
+    +'<button class="eact" data-id="'+e.id+'" data-action="view"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Ver</button>'
+    +'<button class="eact ed" data-id="'+e.id+'" data-action="edit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
+    +'<button class="eact dl" data-id="'+e.id+'" data-action="delete"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>'
+    +'</div>';
+}
+
 $('entries-grid').addEventListener('click', e => {
-  const btn = e.target.closest('[data-action]');
-  if (!btn) return;
-  const { id, action } = btn.dataset;
-  const entry = vault.find(v => v.id === id);
-  if (!entry) return;
-  if (action==='copy')   copyMainField(entry);
-  if (action==='view')   openViewModal(entry);
-  if (action==='edit')   openEditModal(entry);
-  if (action==='delete') { deleteId=id; openModal('modal-del'); }
+  const btn=e.target.closest('[data-action]'); if(!btn) return;
+  const {id,action}=btn.dataset;
+  const entry=vault.find(v=>v.id===id); if(!entry) return;
+  if(action==='copy')   copyMain(entry);
+  if(action==='view')   openView(entry);
+  if(action==='edit')   openEdit(entry);
+  if(action==='delete') { delId=id; openM('modal-del'); }
 });
 
-function copyMainField(e) {
-  let val = '';
-  if (e.type==='password') val = e.password;
-  if (e.type==='card')     val = e.cardNumber?.replace(/\s/g,'');
-  if (e.type==='pin')      val = e.code;
-  if (!val) { toast('Sin valor para copiar','err'); return; }
-  navigator.clipboard.writeText(val).then(() => toast('Copiado al portapapeles ✓'));
+function copyMain(e) {
+  const val=e.type==='password'?e.password:e.type==='card'?e.cardNumber&&e.cardNumber.replace(/\s/g,''):e.code;
+  if(!val) { toast('Sin valor','err'); return; }
+  navigator.clipboard.writeText(val).then(()=>toast('Copiado \u2713'));
+}
+
+// ── BRAND SVG ── (solo para el input badge, con fondo)
+function getBrandSVG(key, h) {
+  h = h||26;
+  if(key==='visa')       return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 26" height="'+h+'"><rect width="80" height="26" rx="4" fill="#1a1f71"/><text x="8" y="20" font-family="Arial Black,sans-serif" font-size="20" font-weight="900" font-style="italic" fill="white" letter-spacing="-1">VISA</text></svg>';
+  if(key==='mastercard') return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 32" height="'+h+'"><circle cx="18" cy="16" r="16" fill="#eb001b"/><circle cx="34" cy="16" r="16" fill="#f79e1b"/><path d="M26 4.8a16 16 0 0 1 0 22.4A16 16 0 0 1 26 4.8z" fill="#ff5f00"/></svg>';
+  if(key==='amex')       return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 26" height="'+h+'"><rect width="80" height="26" rx="4" fill="#007bc1"/><text x="6" y="18" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="white">AMERICAN</text><text x="6" y="24" font-family="Arial,sans-serif" font-size="7" fill="white" letter-spacing="2">EXPRESS</text></svg>';
+  if(key==='discover')   return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 26" height="'+h+'"><rect width="80" height="26" rx="4" fill="#fff"/><text x="4" y="19" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#231f20">DISCOVER</text><circle cx="68" cy="13" r="11" fill="#f76f20"/></svg>';
+  if(key==='diners')     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 26" height="'+h+'"><rect width="80" height="26" rx="4" fill="#fff" stroke="#ccc"/><text x="4" y="18" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="#231f20">DINERS CLUB</text></svg>';
+  if(key==='jcb')        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 32" height="'+h+'"><rect x="0" y="0" width="18" height="32" rx="4" fill="#0e4c96"/><rect x="16" y="0" width="18" height="32" fill="#e31837"/><rect x="32" y="0" width="18" height="32" rx="4" fill="#007b40"/><text x="4" y="22" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">J</text><text x="19" y="22" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">C</text><text x="35" y="22" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">B</text></svg>';
+  return '';
+}
+
+// ── BRAND SVG para la tarjeta visual (sin fondo, texto blanco) ──
+function getBrandSVGCard(key, h) {
+  h = h||32;
+  if(key==='visa')       return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 30" height="'+h+'"><text x="2" y="24" font-family="Arial Black,sans-serif" font-size="24" font-weight="900" font-style="italic" fill="white">VISA</text></svg>';
+  if(key==='mastercard') return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 32" height="'+h+'"><circle cx="18" cy="16" r="16" fill="#eb001b" opacity=".9"/><circle cx="34" cy="16" r="16" fill="#f79e1b" opacity=".9"/><path d="M26 4.8a16 16 0 0 1 0 22.4A16 16 0 0 1 26 4.8z" fill="#ff5f00"/></svg>';
+  if(key==='amex')       return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 30" height="'+h+'"><text x="2" y="16" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="white">AMERICAN</text><text x="2" y="28" font-family="Arial,sans-serif" font-size="8" fill="white" letter-spacing="2">EXPRESS</text></svg>';
+  if(key==='discover')   return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 26" height="'+h+'"><text x="2" y="19" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="white">DISCOVER</text></svg>';
+  if(key==='diners')     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 26" height="'+h+'"><text x="2" y="18" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="white">DINERS CLUB</text></svg>';
+  if(key==='jcb')        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 32" height="'+h+'"><rect x="0" y="0" width="18" height="32" rx="4" fill="#0e4c96"/><rect x="16" y="0" width="18" height="32" fill="#e31837"/><rect x="32" y="0" width="18" height="32" rx="4" fill="#007b40"/><text x="4" y="22" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">J</text><text x="19" y="22" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">C</text><text x="35" y="22" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white">B</text></svg>';
+  return '';
+}
+
+// ── PASSWORD STRENGTH & DUPLICATES ──
+function pwStrength(pw) {
+  if(!pw) return null;
+  var s=0;
+  if(pw.length>=8)  s+=20;
+  if(pw.length>=12) s+=15;
+  if(pw.length>=16) s+=10;
+  if(/[a-z]/.test(pw)) s+=15;
+  if(/[A-Z]/.test(pw)) s+=15;
+  if(/[0-9]/.test(pw)) s+=15;
+  if(/[^a-zA-Z0-9]/.test(pw)) s+=15;
+  s=Math.min(s,100);
+  if(s<40) return 'weak';
+  if(s<70) return 'medium';
+  return 'strong';
+}
+
+function isPwDuplicate(pw, excludeId) {
+  if(!pw) return false;
+  return vault.some(function(e) {
+    return e.type==='password' && e.password===pw && e.id!==excludeId;
+  });
+}
+
+function pwBadge(pw, id) {
+  if(!pw) return '';
+  if(isPwDuplicate(pw, id)) return '<span class="pw-badge pw-dup">&#x26A0; Repetida</span>';
+  var s=pwStrength(pw);
+  if(s==='weak')   return '<span class="pw-badge pw-weak">&#x26A0; D&eacute;bil</span>';
+  if(s==='medium') return '<span class="pw-badge pw-medium">&#x25CF; Media</span>';
+  return '<span class="pw-badge pw-strong">&#x2713; Fuerte</span>';
+}
+
+function detectBrandKey(v) {
+  if(/^4/.test(v))                                         return 'visa';
+  if(/^5[1-5]/.test(v)||/^2(2[2-9]|[3-6]|7[01])/.test(v)) return 'mastercard';
+  if(/^3[47]/.test(v))                                     return 'amex';
+  if(/^6(011|5)/.test(v))                                  return 'discover';
+  if(/^3(0[0-5]|[68])/.test(v))                           return 'diners';
+  if(/^35/.test(v))                                        return 'jcb';
+  return null;
 }
 
 // ── VIEW MODAL ──
-function openViewModal(e) {
-  const body = $('view-body');
-  body.className = `view-type-${e.type}`;
-  let html = '';
+function openView(e) {
+  const body=$('view-body');
+  body.innerHTML='';
+  var html='';
 
-  if (e.type==='card') {
-    html += `
-    <div class="card-visual">
-      <div class="card-brand">${e.bankName||''}</div>
-      <div class="card-chip"></div>
-      <div class="card-number mono">${e.cardNumber||'•••• •••• •••• ••••'}</div>
-      <div class="card-bottom">
-        <div>
-          <div class="card-holder-label">Titular</div>
-          <div class="card-holder-name">${e.cardHolder||'—'}</div>
-        </div>
-        <div>
-          <div class="card-expiry-label">Vence</div>
-          <div class="card-expiry-val mono">${e.expiry||'—'}</div>
-        </div>
-      </div>
-    </div>`;
+  if(e.type==='card') {
+    var bk=detectBrandKey((e.cardNumber||'').replace(/\s/g,''));
+    var cardGrad = {
+      visa:       'linear-gradient(135deg,#1565c0 0%,#0d47a1 40%,#1a237e 100%)',
+      mastercard: 'linear-gradient(135deg,#b71c1c 0%,#c62828 40%,#4a148c 100%)',
+      amex:       'linear-gradient(135deg,#006064 0%,#00838f 40%,#004d40 100%)',
+      discover:   'linear-gradient(135deg,#e65100 0%,#f57c00 40%,#bf360c 100%)',
+      diners:     'linear-gradient(135deg,#263238 0%,#37474f 40%,#1c313a 100%)',
+      jcb:        'linear-gradient(135deg,#1b5e20 0%,#0d47a1 50%,#b71c1c 100%)',
+    };
+    var grad = bk && cardGrad[bk] ? cardGrad[bk] : 'linear-gradient(135deg,#1a237e 0%,#283593 20%,#1565c0 40%,#4a148c 70%,#6a1b9a 100%)';
+    var brandHTML=bk?getBrandSVGCard(bk,32):'';
+    html += '<div class="cvis" style="background:'+grad+'">'
+      +'<div class="cvis-body">'
+      +'<div class="cvis-top">'
+        +'<div class="cvis-bank">'+(e.bankName||'')+'</div>'
+        +'<div class="cvis-nfc">&#x29BF;&#x29BF;</div>'
+      +'</div>'
+      +'<div class="cvis-mid">'
+        +'<div class="cchip"><div class="cchip-inner"></div></div>'
+        +'<div class="cvis-brand">'+brandHTML+'</div>'
+      +'</div>'
+      +'<div class="cnum">'+(e.cardNumber||'\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022')+'</div>'
+      +'<div class="cvis-bot">'
+        +'<div><div class="chl">Titular</div><div class="chn">'+(e.cardHolder||'\u2014')+'</div></div>'
+        +'<div style="text-align:right"><div class="chl">Vence</div><div class="cev mono">'+(e.expiry||'\u2014')+'</div></div>'
+      +'</div>'
+      +'</div>'
+      +'</div>';
   } else {
-    const icon = e.type==='password'?'🔑':'🔢';
-    const title = e.name||'Sin nombre';
-    html += `<div class="view-header-block">
-      <div class="view-icon-big">${icon}</div>
-      <div><div class="view-name">${title}</div><div class="view-cat">${e.category||'Otro'}</div></div>
-    </div>`;
+    var vicoHTML=faviconImgView(e,e.type==='password'?'\ud83d\udd11':'\ud83d\udd22')||'<div class="vico">'+(e.type==='password'?'\ud83d\udd11':'\ud83d\udd22')+'</div>';
+    html += '<div class="vhead">'+vicoHTML+'<div><div class="vname">'+(e.name||'Sin nombre')+'</div></div></div>';
   }
 
-  html += `<div class="view-fields">`;
-
-  if (e.type==='password') {
-    if (e.username) html += viewField('Usuario',e.username,true);
-    html += viewFieldSecret('Contraseña',e.password);
-    if (e.url)      html += viewField('URL',e.url,true);
+  html += '<div class="vfields">';
+  if(e.type==='password') {
+    if(e.username) html+=vf('Usuario',e.username,true);
+    var badge=pwBadge(e.password,e.id);
+    html+='<div class="vfield"><div class="vfl">Contrase\u00f1a'+badge+'</div><div class="vfv"><span class="mono" data-secret="'+e.password+'">'+('\u2022'.repeat(10))+'</span><button class="revbtn">\ud83d\udc41</button><button class="copybtn" data-copy="'+e.password+'">\ud83d\udccb</button></div></div>';
   }
-  if (e.type==='card') {
-    html += viewField('Banco',e.bankName,false);
-    html += viewField('Titular',e.cardHolder,false);
-    html += viewFieldSecret('Número',e.cardNumber);
-    html += viewField('Vencimiento',e.expiry,false);
-    html += viewFieldSecret('CVV',e.cvv);
-    if (e.cardPin) html += viewFieldSecret('PIN tarjeta',e.cardPin);
+  if(e.type==='card') {
+    html+=vf('Banco',e.bankName,false);
+    html+=vf('Titular',e.cardHolder,false);
+    html+=vfs('N\u00famero',e.cardNumber);
+    html+=vf('Vencimiento',e.expiry,false);
+    html+=vfs('CVV',e.cvv);
+    if(e.cardPin) html+=vfs('PIN tarjeta',e.cardPin);
+    if(e.appUser||e.appPass||e.pinTrx||e.token) {
+      html+='<div class="vsec-label">Acceso app banco</div>';
+      if(e.appUser) html+=vf('Usuario app',e.appUser,true);
+      if(e.appPass) html+=vfs('Contrase\u00f1a app',e.appPass);
+      if(e.pinTrx)  html+=vfs('PIN transaccional',e.pinTrx);
+      if(e.token)   html+=vf('Token',e.token,true);
+    }
   }
-  if (e.type==='pin') {
-    if (e.context) html += viewField('Contexto',e.context,false);
-    html += viewFieldSecret('Código',e.code);
+  if(e.type==='pin') {
+    if(e.context) html+=vf('Contexto',e.context,false);
+    html+=vfs('C\u00f3digo',e.code);
   }
-  if (e.notes) html += viewField('Notas',e.notes,false);
-  if ((e.tags||[]).length) html += viewField('Etiquetas',e.tags.join(', '),false);
+  if(e.notes)           html+=vf('Notas',e.notes,false);
+  if((e.tags||[]).length) html+=vf('Etiquetas',e.tags.join(', '),false);
+  html+='</div>';
+  html+='<div style="display:flex;gap:8px;margin-top:14px;">'
+    +'<button class="btn-save" style="flex:1;" onclick="openEdit(vault.find(function(v){return v.id===\''+e.id+'\'}));closeM(\'modal-view\')">\u270f\ufe0f Editar</button>'
+    +'</div>';
 
-  html += `</div>
-  <div style="display:flex;gap:8px;margin-top:16px;">
-    <button class="btn-save" style="flex:1;" onclick="openEditModal(vault.find(v=>v.id==='${e.id}'));closeModal('modal-view')">✏️ Editar</button>
-  </div>`;
+  body.innerHTML=html;
 
-  body.innerHTML = html;
-  body.querySelectorAll('.reveal-btn').forEach(btn => {
+  body.querySelectorAll('.revbtn').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      const valEl = this.previousSibling;
-      if (valEl && valEl.dataset.secret) {
-        if (this.textContent==='👁') { valEl.textContent=valEl.dataset.secret; this.textContent='🔒'; }
-        else { valEl.textContent='•'.repeat(10); this.textContent='👁'; }
+      var v=this.previousSibling;
+      if(v&&v.dataset.secret) {
+        if(this.textContent==='\ud83d\udc41') { v.textContent=v.dataset.secret; this.textContent='\ud83d\udd12'; }
+        else { v.textContent='\u2022'.repeat(10); this.textContent='\ud83d\udc41'; }
       }
     });
   });
-  body.querySelectorAll('.copy-inline').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const val = this.dataset.copy;
-      navigator.clipboard.writeText(val).then(() => toast('Copiado ✓'));
-    });
+  body.querySelectorAll('.copybtn').forEach(function(btn) {
+    btn.addEventListener('click', function() { navigator.clipboard.writeText(this.dataset.copy).then(function(){toast('Copiado \u2713');}); });
   });
-  openModal('modal-view');
+  openM('modal-view');
 }
 
-function viewField(label, val, copyable) {
-  return `<div class="view-field">
-    <div class="view-field-label">${label}</div>
-    <div class="view-field-val">
-      <span>${val}</span>
-      ${copyable ? `<button class="copy-inline" data-copy="${val}">📋</button>` : ''}
-    </div>
-  </div>`;
+function vf(l,v,c) {
+  return '<div class="vfield"><div class="vfl">'+l+'</div><div class="vfv"><span>'+v+'</span>'+(c?'<button class="copybtn" data-copy="'+v+'">\ud83d\udccb</button>':'')+'</div></div>';
 }
-function viewFieldSecret(label, val) {
-  return `<div class="view-field">
-    <div class="view-field-label">${label}</div>
-    <div class="view-field-val">
-      <span class="mono" data-secret="${val}">${'•'.repeat(10)}</span>
-      <button class="reveal-btn">👁</button>
-      <button class="copy-inline" data-copy="${val}">📋</button>
-    </div>
-  </div>`;
+function vfs(l,v) {
+  return '<div class="vfield"><div class="vfl">'+l+'</div><div class="vfv"><span class="mono" data-secret="'+v+'">'+('\u2022'.repeat(10))+'</span><button class="revbtn">\ud83d\udc41</button><button class="copybtn" data-copy="'+v+'">\ud83d\udccb</button></div></div>';
 }
 
-// ── ADD/EDIT MODAL ──
-function openAddModal() {
-  editingId = null; currentType = 'password';
-  $('modal-add-title').textContent = 'Nueva entrada';
-  clearForm();
-  setActiveType('password');
-  openModal('modal-add');
+function openAdd() { editId=null; curT='password'; $('modal-add-title').textContent='Nueva entrada'; clearF(); setT('password'); openM('modal-add'); }
+function openEdit(e) { editId=e.id; curT=e.type; $('modal-add-title').textContent='Editar entrada'; setT(e.type); fillF(e); openM('modal-add'); }
+
+function clearF() {
+  ['p-name','p-user','p-pass','p-url','c-bank','c-holder','c-url','c-number','c-expiry','c-cvv','c-pin','c-appuser','c-apppass','c-pintrx','c-token','pi-name','pi-code','pi-context','pi-url','e-tags','e-notes'].forEach(function(id){$(id).value='';});
+
+  $('card-brand-badge').innerHTML='';
 }
 
-function openEditModal(e) {
-  editingId = e.id; currentType = e.type;
-  $('modal-add-title').textContent = 'Editar entrada';
-  setActiveType(e.type);
-  fillForm(e);
-  openModal('modal-add');
-}
+function fillF(e) {
+  clearF();
 
-function clearForm() {
-  ['p-name','p-user','p-pass','p-url',
-   'c-bank','c-holder','c-number','c-expiry','c-cvv','c-pin',
-   'pi-name','pi-code','pi-context','e-tags','e-notes'].forEach(id => $(id).value='');
-  $('e-cat').value='Otro';
-}
-
-function fillForm(e) {
-  clearForm();
-  $('e-cat').value = e.category||'Otro';
-  $('e-tags').value = (e.tags||[]).join(', ');
-  $('e-notes').value = e.notes||'';
-  if (e.type==='password') {
-    $('p-name').value=e.name||''; $('p-user').value=e.username||'';
-    $('p-pass').value=e.password||''; $('p-url').value=e.url||'';
+  $('e-tags').value=(e.tags||[]).join(', ');
+  $('e-notes').value=e.notes||'';
+  if(e.type==='password') { $('p-name').value=e.name||''; $('p-user').value=e.username||''; $('p-pass').value=e.password||''; $('p-url').value=e.url||''; }
+  if(e.type==='card') {
+    $('c-bank').value=e.bankName||''; $('c-holder').value=e.cardHolder||''; $('c-url').value=e.siteUrl||'';
+    $('c-number').value=e.cardNumber||''; $('c-expiry').value=e.expiry||''; $('c-cvv').value=e.cvv||'';
+    $('c-pin').value=e.cardPin||''; $('c-appuser').value=e.appUser||''; $('c-apppass').value=e.appPass||'';
+    $('c-pintrx').value=e.pinTrx||''; $('c-token').value=e.token||'';
+    var bk=detectBrandKey((e.cardNumber||'').replace(/\s/g,''));
+    $('card-brand-badge').innerHTML=bk?getBrandSVG(bk,24):'';
   }
-  if (e.type==='card') {
-    $('c-bank').value=e.bankName||''; $('c-holder').value=e.cardHolder||'';
-    $('c-number').value=e.cardNumber||''; $('c-expiry').value=e.expiry||'';
-    $('c-cvv').value=e.cvv||''; $('c-pin').value=e.cardPin||'';
-  }
-  if (e.type==='pin') {
-    $('pi-name').value=e.name||''; $('pi-code').value=e.code||'';
-    $('pi-context').value=e.context||'';
-  }
+  if(e.type==='pin') { $('pi-name').value=e.name||''; $('pi-code').value=e.code||''; $('pi-context').value=e.context||''; $('pi-url').value=e.siteUrl||''; }
 }
 
-function setActiveType(type) {
-  currentType = type;
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.type===type));
-  document.querySelectorAll('.fields-section').forEach(f => f.classList.toggle('active', f.id===`f-${type[0]+''+type.slice(1,3)}`));
-  // match by id prefix
-  $('f-password').classList.toggle('active', type==='password');
-  $('f-card').classList.toggle('active', type==='card');
-  $('f-pin').classList.toggle('active', type==='pin');
+function setT(t) {
+  curT=t;
+  document.querySelectorAll('.type-btn').forEach(function(b){b.classList.toggle('active',b.dataset.type===t);});
+  $('f-password').classList.toggle('active',t==='password');
+  $('f-card').classList.toggle('active',t==='card');
+  $('f-pin').classList.toggle('active',t==='pin');
 }
+document.querySelectorAll('.type-btn').forEach(function(b){b.addEventListener('click',function(){setT(b.dataset.type);});});
 
-document.querySelectorAll('.type-btn').forEach(btn => {
-  btn.addEventListener('click', () => setActiveType(btn.dataset.type));
-});
-
-$('btn-save').addEventListener('click', () => {
-  const tags = $('e-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
-  const d = {
-    category: $('e-cat').value, tags, notes: $('e-notes').value,
-    name: $('p-name').value,     username: $('p-user').value,
-    password: $('p-pass').value, url: $('p-url').value,
-    bankName: $('c-bank').value, cardHolder: $('c-holder').value,
-    cardNumber: $('c-number').value.replace(/\s/g,'').replace(/(.{4})/g,'$1 ').trim(),
-    expiry: $('c-expiry').value, cvv: $('c-cvv').value, cardPin: $('c-pin').value,
-    code: $('pi-code').value, context: $('pi-context').value
+$('btn-save').addEventListener('click', function() {
+  var tags=$('e-tags').value.split(',').map(function(t){return t.trim();}).filter(Boolean);
+  var d={
+    category:'Otro', tags:tags, notes:$('e-notes').value,
+    name:$('p-name').value, username:$('p-user').value, password:$('p-pass').value, url:$('p-url').value,
+    bankName:$('c-bank').value, cardHolder:$('c-holder').value,
+    cardNumber:$('c-number').value.replace(/\s/g,'').replace(/(.{4})/g,'$1 ').trim(),
+    expiry:$('c-expiry').value, cvv:$('c-cvv').value, cardPin:$('c-pin').value,
+    appUser:$('c-appuser').value, appPass:$('c-apppass').value,
+    pinTrx:$('c-pintrx').value, token:$('c-token').value,
+    siteUrl:curT==='card'?$('c-url').value:$('pi-url').value,
+    code:$('pi-code').value, context:$('pi-context').value
   };
-  // Override name for pin
-  if (currentType==='pin') d.name = $('pi-name').value;
-
-  // Basic validation
-  if (currentType==='password' && !$('p-name').value) { toast('Ingresá el nombre del sitio','err'); return; }
-  if (currentType==='card'     && !$('c-bank').value)  { toast('Ingresá el nombre del banco','err'); return; }
-  if (currentType==='pin'      && !$('pi-name').value) { toast('Ingresá un nombre','err'); return; }
-
+  if(curT==='pin') d.name=$('pi-name').value;
+  if(curT==='password'&&!$('p-name').value) { toast('Ingres\u00e1 el nombre del sitio','err'); return; }
+  if(curT==='card'&&!$('c-bank').value)     { toast('Ingres\u00e1 el nombre del banco','err'); return; }
+  if(curT==='pin'&&!$('pi-name').value)     { toast('Ingres\u00e1 un nombre','err'); return; }
   saveEntry(d);
 });
 
-// ── STATS FILTER ──
-document.querySelectorAll('.stat-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.stat-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    filterType = chip.dataset.type;
-    renderEntries();
+document.querySelectorAll('.stat').forEach(function(c) {
+  c.addEventListener('click', function() {
+    document.querySelectorAll('.stat').forEach(function(x){x.classList.remove('active');});
+    c.classList.add('active'); fType=c.dataset.type; renderEntries();
   });
 });
+$('search-input').addEventListener('input', function(e){fQ=e.target.value; renderEntries();});
 
-$('search-input').addEventListener('input', e => { searchQ = e.target.value; renderEntries(); });
-$('filter-cat').addEventListener('change', e => { filterCat = e.target.value; renderEntries(); });
+$('fab').addEventListener('click', openAdd);
+$('btn-confirm-del').addEventListener('click', function(){if(delId)deleteEntry(delId);});
+document.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',function(){closeM(b.dataset.close);});});
+document.querySelectorAll('.moverlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)closeM(o.id);});});
 
-// ── FAB & MODALS ──
-$('fab').addEventListener('click', openAddModal);
-$('btn-confirm-del').addEventListener('click', () => { if(deleteId) deleteEntry(deleteId); });
-
-document.querySelectorAll('[data-close]').forEach(btn => {
-  btn.addEventListener('click', () => closeModal(btn.dataset.close));
-});
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => { if(e.target===overlay) closeModal(overlay.id); });
-});
-
-// ── TOGGLE PASSWORD VISIBILITY ──
-document.addEventListener('click', e => {
-  const btn = e.target.closest('.toggle-vis');
-  if (!btn) return;
-  const input = $(btn.dataset.target);
-  if (!input) return;
-  input.type = input.type==='password' ? 'text' : 'password';
-  btn.textContent = input.type==='password' ? '👁' : '🔒';
+document.addEventListener('click', function(e) {
+  var btn=e.target.closest('.eye'); if(!btn) return;
+  var inp=$(btn.dataset.t); if(!inp) return;
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'\ud83d\udc41':'\ud83d\udd12';
 });
 
-// ── CARD NUMBER FORMAT ──
 $('c-number').addEventListener('input', function() {
-  let v = this.value.replace(/\D/g,'').slice(0,16);
-  this.value = v.replace(/(.{4})/g,'$1 ').trim();
+  var v=this.value.replace(/\D/g,'').slice(0,16);
+  this.value=v.replace(/(.{4})/g,'$1 ').trim();
+  var key=detectBrandKey(v);
+  $('card-brand-badge').innerHTML=key?getBrandSVG(key,24):'';
 });
 $('c-expiry').addEventListener('input', function() {
-  let v = this.value.replace(/\D/g,'').slice(0,4);
-  if (v.length>2) v = v.slice(0,2)+'/'+v.slice(2);
-  this.value = v;
+  var v=this.value.replace(/\D/g,'').slice(0,4);
+  if(v.length>2) v=v.slice(0,2)+'/'+v.slice(2);
+  this.value=v;
 });
 
-// ── PASSWORD GENERATOR ──
-let generatedPass = '';
-
-function generatePassword() {
-  const len = parseInt($('gen-length').value);
-  let chars = '';
-  if ($('cb-lower').checked) chars += 'abcdefghijklmnopqrstuvwxyz';
-  if ($('cb-upper').checked) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  if ($('cb-num').checked)   chars += '0123456789';
-  if ($('cb-sym').checked)   chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
-  if (!chars) { chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; }
-  let pass = '';
-  const arr = new Uint32Array(len);
-  crypto.getRandomValues(arr);
-  for (let i=0; i<len; i++) pass += chars[arr[i] % chars.length];
-  generatedPass = pass;
-  $('gen-result').textContent = pass;
-  updateStrength(pass);
+var genPass='';
+function genPw() {
+  var len=parseInt($('gen-length').value);
+  var chars='';
+  if($('cb-lower').checked) chars+='abcdefghijklmnopqrstuvwxyz';
+  if($('cb-upper').checked) chars+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if($('cb-num').checked)   chars+='0123456789';
+  if($('cb-sym').checked)   chars+='!@#$%^&*()_+-=[]{}|;:,.<>?';
+  if(!chars) chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var p=''; var a=new Uint32Array(len); crypto.getRandomValues(a);
+  for(var i=0;i<len;i++) p+=chars[a[i]%chars.length];
+  genPass=p; $('gen-result').textContent=p; genStr(p);
 }
-
-function updateStrength(pass) {
-  let score = 0;
-  if (pass.length>=8)  score+=20;
-  if (pass.length>=12) score+=10;
-  if (pass.length>=16) score+=10;
-  if (/[a-z]/.test(pass)) score+=15;
-  if (/[A-Z]/.test(pass)) score+=15;
-  if (/[0-9]/.test(pass)) score+=15;
-  if (/[^a-zA-Z0-9]/.test(pass)) score+=15;
-  score = Math.min(score, 100);
-  const fill = $('strength-fill');
-  fill.style.width = score+'%';
-  fill.style.background = score<40?'var(--danger)':score<70?'var(--warn)':'var(--ok)';
+function genStr(p) {
+  var s=0;
+  if(p.length>=8)s+=20; if(p.length>=12)s+=10; if(p.length>=16)s+=10;
+  if(/[a-z]/.test(p))s+=15; if(/[A-Z]/.test(p))s+=15; if(/[0-9]/.test(p))s+=15; if(/[^a-zA-Z0-9]/.test(p))s+=15;
+  s=Math.min(s,100);
+  var f=$('strength-fill'); f.style.width=s+'%';
+  f.style.background=s<40?'var(--err)':s<70?'var(--warn)':'var(--ok)';
 }
-
-$('open-gen').addEventListener('click', () => { generatePassword(); openModal('modal-gen'); });
-$('btn-regen').addEventListener('click', generatePassword);
-$('gen-length').addEventListener('input', function() { $('gen-len-val').textContent=this.value; generatePassword(); });
-['cb-upper','cb-lower','cb-num','cb-sym'].forEach(id => $(id).addEventListener('change', generatePassword));
-
-$('btn-copy-gen').addEventListener('click', () => {
-  if (generatedPass) navigator.clipboard.writeText(generatedPass).then(() => toast('Contraseña copiada ✓'));
-});
-
-$('btn-use-pass').addEventListener('click', () => {
-  if (generatedPass) {
-    $('p-pass').value = generatedPass;
-    closeModal('modal-gen');
-    toast('Contraseña aplicada ✓');
-  }
-});
+$('open-gen').addEventListener('click',function(){genPw(); openM('modal-gen');});
+$('btn-regen').addEventListener('click', genPw);
+$('gen-length').addEventListener('input',function(){$('gen-len-val').textContent=this.value; genPw();});
+['cb-upper','cb-lower','cb-num','cb-sym'].forEach(function(id){$(id).addEventListener('change',genPw);});
+$('btn-copy-gen').addEventListener('click',function(){if(genPass)navigator.clipboard.writeText(genPass).then(function(){toast('Contrase\u00f1a copiada \u2713');});});
+$('btn-use-pass').addEventListener('click',function(){if(genPass){$('p-pass').value=genPass; closeM('modal-gen'); toast('Contrase\u00f1a aplicada \u2713');}});
 </script>
 </body>
 </html>
