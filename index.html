@@ -253,11 +253,18 @@ header{background:var(--s1);border-bottom:1px solid var(--b);padding:0 20px;heig
         <div class="fg"><label class="fl">Contraseña maestra</label><div class="fi-wrap"><input id="login-pass" class="fi" type="password" placeholder="••••••••" autocomplete="current-password"><button class="eye" data-t="login-pass">👁</button></div></div>
         <p id="login-err" class="auth-err"></p>
         <button id="btn-login" class="btn-ac">Entrar al Vault →</button>
+        <button id="btn-biometric" onclick="loginWithBiometric()" style="display:none;width:100%;margin-top:10px;padding:13px;background:var(--s2);border:1px solid var(--b2);border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;align-items:center;justify-content:center;gap:8px;transition:.2s;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.5 2 5.5 4.5 5.5 8v1C3.5 9.5 2 11 2 13v5c0 2.2 1.8 4 4 4h12c2.2 0 4-1.8 4-4v-5c0-2-1.5-3.5-3.5-4V8C18.5 4.5 15.5 2 12 2zm0 2c2.5 0 4.5 1.8 4.5 4v1h-9V8c0-2.2 2-4 4.5-4z"/></svg>
+          Entrar con huella
+        </button>
+        <p style="text-align:center;margin-top:10px;"><button id="btn-forgot" style="background:none;border:none;color:var(--ac);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline;">Olvidé mi clave maestra</button></p>
       </div>
       <div id="pane-register" class="tab-pane">
         <div class="fg"><label class="fl">Email</label><input id="reg-email" class="fi" type="email" placeholder="tu@email.com" autocomplete="email"></div>
         <div class="fg"><label class="fl">Contraseña maestra</label><div class="fi-wrap"><input id="reg-pass" class="fi" type="password" placeholder="Mín. 8 caracteres" autocomplete="new-password"><button class="eye" data-t="reg-pass">👁</button></div></div>
         <div class="fg"><label class="fl">Confirmar</label><div class="fi-wrap"><input id="reg-confirm" class="fi" type="password" placeholder="Repetir contraseña" autocomplete="new-password"><button class="eye" data-t="reg-confirm">👁</button></div></div>
+        <div class="fg"><label class="fl">Frase de recuperación</label><input id="reg-hint" class="fi" type="text" placeholder="ej. mi perro se llama firulais…" autocomplete="off"></div>
+        <p style="font-size:11px;color:var(--muted2);margin-top:-8px;padding:0 2px;">Usala si olvidás tu clave maestra. Guardala en tu memoria.</p>
         <p id="reg-err" class="auth-err"></p>
         <button id="btn-register" class="btn-ac">Crear cuenta →</button>
         <p class="auth-note">⚠️ Tu contraseña maestra cifra los datos con AES-256.</p>
@@ -271,7 +278,7 @@ header{background:var(--s1);border-bottom:1px solid var(--b);padding:0 20px;heig
       <div class="hlogo-icon"><svg width="16" height="16" viewBox="0 0 28 28" fill="none"><path d="M14 2C9.58 2 6 5.58 6 10v2H4v14h20V12h-2v-2c0-4.42-3.58-8-8-8zm0 2.5c3.04 0 5.5 2.46 5.5 5.5v2H8.5v-2c0-3.04 2.46-5.5 5.5-5.5zm0 9.5a2.5 2.5 0 0 1 .75 4.88V21h-1.5v-2.12A2.5 2.5 0 0 1 14 14z" fill="#38c1d6"/></svg></div>
       <span class="hlogo-text">VaultKey</span>
     </div>
-    <div class="hright"><span id="user-email" class="upill">—</span><button id="btn-logout" class="btn-out">Salir</button></div>
+    <div class="hright"><span id="user-email" class="upill">—</span><button id="btn-settings" style="background:none;border:1px solid var(--b);border-radius:8px;padding:6px 10px;color:var(--muted2);font-size:16px;cursor:pointer;transition:.2s;" title="Configuración">⚙️</button><button id="btn-logout" class="btn-out">Salir</button></div>
   </header>
   <div class="stats">
     <div class="stat active" data-type="password"><span class="stat-n" id="cnt-pass">0</span><span class="stat-l">🔑 Claves</span></div>
@@ -323,6 +330,90 @@ header{background:var(--s1);border-bottom:1px solid var(--b);padding:0 20px;heig
         <div class="fg full"><label class="fl">Notas</label><textarea id="e-notes" class="fi" rows="2" placeholder="Información adicional…" style="resize:vertical;"></textarea></div>
         <div class="factions"><button class="btn-cancel" data-close="modal-add">Cancelar</button><button id="btn-save" class="btn-save">Guardar entrada</button></div>
       </div>
+    </div>
+  </div>
+</div>
+<div id="modal-settings" class="moverlay">
+  <div class="mbox" style="max-width:420px;">
+    <div class="mhead"><span class="mtitle">⚙️ Configuración</span><button class="mclose" data-close="modal-settings">✕</button></div>
+    <div class="mbody">
+
+      <!-- FRASE DE RECUPERACIÓN -->
+      <div style="margin-bottom:24px;">
+        <div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px;">🔑 Frase de recuperación</div>
+        <div style="font-size:12px;color:var(--muted2);margin-bottom:12px;line-height:1.5;">Si olvidás tu clave maestra, esta frase te la devuelve. Guardala bien en tu memoria.</div>
+        <div class="fg" style="margin-bottom:10px;">
+          <label class="fl">Clave maestra actual</label>
+          <div class="fi-wrap"><input id="cfg-masterpw" class="fi" type="password" placeholder="Tu clave maestra actual"><button class="eye" data-t="cfg-masterpw">👁</button></div>
+        </div>
+        <div class="fg" style="margin-bottom:10px;">
+          <label class="fl">Nueva frase de recuperación</label>
+          <input id="cfg-hint" class="fi" type="text" placeholder="ej. mi perro se llama firulais…" autocomplete="off">
+        </div>
+        <p id="cfg-hint-err" class="auth-err"></p>
+        <button id="btn-save-hint" style="width:100%;padding:12px;background:var(--ac);border:none;border-radius:10px;color:#0a0a0a;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Guardar frase</button>
+      </div>
+
+      <div style="border-top:1px solid var(--b);margin-bottom:24px;"></div>
+
+      <!-- HUELLA DACTILAR -->
+      <div style="margin-bottom:24px;">
+        <div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px;">🤳 Huella dactilar</div>
+        <div style="font-size:12px;color:var(--muted2);margin-bottom:12px;line-height:1.5;">Activá el acceso con tu huella para entrar sin escribir la clave maestra.</div>
+        <div id="bio-status" style="font-size:12px;margin-bottom:10px;padding:8px 12px;border-radius:8px;background:var(--s2);color:var(--muted2);">Verificando disponibilidad…</div>
+        <div class="fg" style="margin-bottom:10px;">
+          <label class="fl">Clave maestra actual</label>
+          <div class="fi-wrap"><input id="cfg-masterpw-bio" class="fi" type="password" placeholder="Tu clave maestra actual"><button class="eye" data-t="cfg-masterpw-bio">👁</button></div>
+        </div>
+        <p id="cfg-bio-err" class="auth-err"></p>
+        <button id="btn-save-bio" style="width:100%;padding:12px;background:var(--s2);border:1px solid var(--b2);border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Activar huella dactilar</button>
+      </div>
+
+      <div style="border-top:1px solid var(--b);margin-bottom:24px;"></div>
+
+      <!-- BLOQUEO AUTOMÁTICO -->
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px;">🔒 Bloqueo automático</div>
+        <div style="font-size:12px;color:var(--muted2);margin-bottom:12px;line-height:1.5;">La app se bloquea automáticamente tras un período de inactividad.</div>
+        <div class="fg">
+          <label class="fl">Tiempo de inactividad</label>
+          <select id="cfg-lock-time" class="fi fsel" style="padding:11px 13px;">
+            <option value="1">1 minuto</option>
+            <option value="3" selected>3 minutos</option>
+            <option value="5">5 minutos</option>
+            <option value="10">10 minutos</option>
+            <option value="30">30 minutos</option>
+            <option value="0">Nunca</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div id="modal-recovery" class="moverlay">
+  <div class="mbox" style="max-width:400px;">
+    <div class="mhead"><span class="mtitle">Recuperar clave maestra</span><button class="mclose" data-close="modal-recovery">✕</button></div>
+    <div class="mbody">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:40px;margin-bottom:10px;">🔓</div>
+        <p style="font-size:14px;color:var(--muted2);line-height:1.6;">Ingresá tu frase de recuperación para ver tu clave maestra.</p>
+      </div>
+      <div class="fg" style="margin-bottom:14px;">
+        <label class="fl">Email</label>
+        <input id="rec-email" class="fi" type="email" placeholder="tu@email.com">
+      </div>
+      <div class="fg" style="margin-bottom:14px;">
+        <label class="fl">Frase de recuperación</label>
+        <input id="rec-hint" class="fi" type="text" placeholder="tu frase de recuperación…" autocomplete="off">
+      </div>
+      <p id="rec-err" class="auth-err" style="margin-bottom:8px;"></p>
+      <div id="rec-result" style="display:none;background:var(--s2);border:1px solid var(--ac);border-radius:10px;padding:14px;margin-bottom:14px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--muted2);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">Tu clave maestra es</div>
+        <div id="rec-pw" style="font-family:'DM Mono',monospace;font-size:16px;color:var(--white);word-break:break-all;"></div>
+        <button id="rec-copy" style="margin-top:10px;background:var(--acd);border:1px solid var(--ac);color:var(--ac);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;">Copiar</button>
+      </div>
+      <button id="btn-recover" class="btn-ac">Recuperar clave maestra</button>
     </div>
   </div>
 </div>
@@ -504,8 +595,26 @@ $('btn-register').addEventListener('click', async () => {
   try {
     const c=await AUTH.createUserWithEmailAndPassword(email,pw);
     encKey=dk(pw,c.user.uid); vault=[];
+    // Guardar frase de recuperación
+    const hint=$('reg-hint').value.trim();
+    if(hint){
+      const emailKey=CryptoJS.MD5(email.toLowerCase()).toString();
+      const encPw=CryptoJS.AES.encrypt(pw,hint.toLowerCase()).toString();
+      try{ await DB.collection('recovery').doc(emailKey).set({encPw,updatedAt:TS()}); }
+      catch(e){ console.warn('hint save:',e); }
+    }
     renderEntries(); updateCounts();
     $('user-email').textContent=email; SS('screen-app');
+    // Ofrecer huella
+    if(window.PublicKeyCredential){
+      setTimeout(async()=>{
+        if(confirm('\u00bfAct\u00edv\u00e1s acceso con huella dactilar?')){
+          const ok=await registerBiometric(email,pw);
+          if(ok) toast('\ud83d\udc4b Huella activada');
+          else toast('No se pudo activar la huella','err');
+        }
+      },800);
+    }
   } catch(e) {
     const m={'auth/email-already-in-use':'Email ya registrado.','auth/invalid-email':'Email inválido.','auth/weak-password':'Contraseña muy débil.'};
     setErr('reg-err',m[e.code]||e.message);
@@ -913,6 +1022,288 @@ $('c-expiry').addEventListener('input', function() {
   if(v.length>2) v=v.slice(0,2)+'/'+v.slice(2);
   this.value=v;
 });
+
+// ══ RECUPERACIÓN DE CLAVE MAESTRA ══
+
+// Guardar hint cifrado en Firestore
+async function saveRecoveryHint(uid, masterPw, hint) {
+  if (!hint) return;
+  // Ciframos la clave maestra con el hint
+  var encPw = CryptoJS.AES.encrypt(masterPw, hint.toLowerCase().trim()).toString();
+  try {
+    await DB.collection('recovery').doc(uid).set({
+      encPw: encPw,
+      updatedAt: TS()
+    });
+    console.log('Hint guardado');
+  } catch(e) {
+    console.warn('Error guardando hint:', e.message);
+  }
+}
+
+// Recuperar clave maestra con hint
+async function recoverMasterPw(uid, hint) {
+  try {
+    var snap = await DB.collection('recovery').doc(uid).get();
+    if (!snap.exists) return null;
+    var encPw = snap.data().encPw;
+    var bytes = CryptoJS.AES.decrypt(encPw, hint.toLowerCase().trim());
+    var pw = bytes.toString(CryptoJS.enc.Utf8);
+    if (!pw) return null;
+    return pw;
+  } catch(e) {
+    return null;
+  }
+}
+
+// Botón olvidé mi clave
+document.getElementById('btn-forgot').addEventListener('click', function() {
+  $('rec-email').value = $('login-email').value || '';
+  $('rec-hint').value = '';
+  $('rec-err').textContent = '';
+  $('rec-result').style.display = 'none';
+  openM('modal-recovery');
+});
+
+// Botón recuperar
+document.getElementById('btn-recover').addEventListener('click', async function() {
+  var email = $('rec-email').value.trim();
+  var hint  = $('rec-hint').value.trim();
+  if (!email || !hint) { $('rec-err').textContent = 'Completá todos los campos.'; return; }
+  $('rec-err').textContent = '';
+  spin(true);
+  try {
+    // Buscar el uid por email — necesitamos intentar login temporal
+    // Usamos un método alternativo: guardamos por email hash
+    var emailKey = CryptoJS.MD5(email.toLowerCase()).toString();
+    var snap = await DB.collection('recovery').doc(emailKey).get();
+    if (!snap.exists) {
+      $('rec-err').textContent = 'No se encontró cuenta con ese email.';
+      spin(false); return;
+    }
+    var encPw = snap.data().encPw;
+    var bytes = CryptoJS.AES.decrypt(encPw, hint.toLowerCase());
+    var pw = bytes.toString(CryptoJS.enc.Utf8);
+    if (!pw || pw.length < 3) {
+      $('rec-err').textContent = 'Frase de recuperación incorrecta.';
+      spin(false); return;
+    }
+    $('rec-pw').textContent = pw;
+    $('rec-result').style.display = 'block';
+  } catch(e) {
+    $('rec-err').textContent = 'Error al recuperar. Intentá de nuevo.';
+  }
+  spin(false);
+});
+
+document.getElementById('rec-copy').addEventListener('click', function() {
+  var pw = $('rec-pw').textContent;
+  navigator.clipboard.writeText(pw).then(function() {
+    toast('Clave copiada ✓');
+    // Pre-llenar el login
+    $('login-email').value = $('rec-email').value;
+    $('login-pass').value = pw;
+    closeM('modal-recovery');
+  });
+});
+
+// ══ HUELLA DACTILAR (WebAuthn) ══
+var biometricCredId = null;
+
+async function registerBiometric(email, masterPw) {
+  if (!window.PublicKeyCredential) return false;
+  try {
+    var challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+    var cred = await navigator.credentials.create({
+      publicKey: {
+        challenge: challenge,
+        rp: { name: 'VaultKey', id: location.hostname },
+        user: {
+          id: new TextEncoder().encode(email),
+          name: email,
+          displayName: 'VaultKey User'
+        },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+          userVerification: 'required'
+        },
+        timeout: 60000
+      }
+    });
+    // Guardar credId y contraseña cifrada con credId
+    var credIdB64 = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+    var encPw = CryptoJS.AES.encrypt(masterPw, credIdB64).toString();
+    localStorage.setItem('vk_bio_id', credIdB64);
+    localStorage.setItem('vk_bio_email', email);
+    localStorage.setItem('vk_bio_enc', encPw);
+    return true;
+  } catch(e) {
+    console.warn('Biometric register failed:', e);
+    return false;
+  }
+}
+
+async function loginWithBiometric() {
+  var credIdB64 = localStorage.getItem('vk_bio_id');
+  var email     = localStorage.getItem('vk_bio_email');
+  var encPw     = localStorage.getItem('vk_bio_enc');
+  if (!credIdB64 || !email || !encPw) return false;
+  try {
+    var challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+    var credIdArr = Uint8Array.from(atob(credIdB64), function(c){return c.charCodeAt(0);});
+    var assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge: challenge,
+        allowCredentials: [{ type: 'public-key', id: credIdArr }],
+        userVerification: 'required',
+        timeout: 60000
+      }
+    });
+    var bytes = CryptoJS.AES.decrypt(encPw, credIdB64);
+    var pw = bytes.toString(CryptoJS.enc.Utf8);
+    if (!pw) return false;
+    // Auto-login
+    $('login-email').value = email;
+    $('login-pass').value = pw;
+    $('btn-login').click();
+    return true;
+  } catch(e) {
+    console.warn('Biometric login failed:', e);
+    return false;
+  }
+}
+
+// Mostrar botón de huella si hay credencial guardada
+function checkBiometric() {
+  var hasBio = localStorage.getItem('vk_bio_id');
+  var bioBtn = document.getElementById('btn-biometric');
+  if (hasBio && window.PublicKeyCredential && bioBtn) {
+    bioBtn.style.display = 'flex';
+  }
+}
+checkBiometric();
+
+// ══ CONFIGURACIÓN ══
+
+$('btn-settings').addEventListener('click', function() {
+  // Verificar estado de huella
+  var bioStatus = $('bio-status');
+  if (!window.PublicKeyCredential) {
+    bioStatus.textContent = '❌ Tu navegador no soporta huella dactilar';
+    bioStatus.style.color = 'var(--err)';
+    $('btn-save-bio').disabled = true;
+    $('btn-save-bio').style.opacity = '.5';
+  } else if (localStorage.getItem('vk_bio_id')) {
+    bioStatus.textContent = '✅ Huella activada';
+    bioStatus.style.color = 'var(--ok)';
+    $('btn-save-bio').textContent = 'Cambiar huella dactilar';
+  } else {
+    bioStatus.textContent = '⚪ Huella no activada';
+    bioStatus.style.color = 'var(--muted2)';
+    $('btn-save-bio').textContent = 'Activar huella dactilar';
+  }
+  // Limpiar campos
+  $('cfg-masterpw').value = '';
+  $('cfg-masterpw-bio').value = '';
+  $('cfg-hint').value = '';
+  $('cfg-hint-err').textContent = '';
+  $('cfg-bio-err').textContent = '';
+  // Cargar tiempo de bloqueo guardado
+  var savedLock = localStorage.getItem('vk_lock_time') || '3';
+  $('cfg-lock-time').value = savedLock;
+  openM('modal-settings');
+});
+
+// Guardar frase de recuperación
+$('btn-save-hint').addEventListener('click', async function() {
+  var masterpw = $('cfg-masterpw').value;
+  var hint     = $('cfg-hint').value.trim();
+  if (!masterpw) { $('cfg-hint-err').textContent = 'Ingresá tu clave maestra actual.'; return; }
+  if (!hint)     { $('cfg-hint-err').textContent = 'Ingresá una frase de recuperación.'; return; }
+  // Verificar que la clave maestra es correcta intentando descifrar algo del vault
+  var testKey = dk(masterpw, AUTH.currentUser.uid);
+  if (vault.length > 0) {
+    try {
+      var snap = await DB.collection('vaults').doc(AUTH.currentUser.uid).collection('entries').orderBy('updatedAt','desc').get();
+      var firstDoc = null;
+      snap.forEach(function(d){ if(!firstDoc) firstDoc=d; });
+      if (firstDoc) {
+        var b = CryptoJS.AES.decrypt(firstDoc.data().enc, testKey);
+        var test = b.toString(CryptoJS.enc.Utf8);
+        if (!test) { $('cfg-hint-err').textContent = 'Clave maestra incorrecta.'; return; }
+      }
+    } catch(e) { $('cfg-hint-err').textContent = 'Clave maestra incorrecta.'; return; }
+  }
+  // Guardar hint
+  spin(true);
+  try {
+    var email = AUTH.currentUser.email;
+    var emailKey = CryptoJS.MD5(email.toLowerCase()).toString();
+    var encPw = CryptoJS.AES.encrypt(masterpw, hint.toLowerCase()).toString();
+    await DB.collection('recovery').doc(emailKey).set({encPw:encPw, updatedAt:TS()});
+    toast('Frase de recuperación guardada ✓');
+    $('cfg-hint').value = '';
+    $('cfg-masterpw').value = '';
+    $('cfg-hint-err').textContent = '';
+  } catch(e) { $('cfg-hint-err').textContent = 'Error al guardar: '+e.message; }
+  spin(false);
+});
+
+// Activar huella
+$('btn-save-bio').addEventListener('click', async function() {
+  var masterpw = $('cfg-masterpw-bio').value;
+  if (!masterpw) { $('cfg-bio-err').textContent = 'Ingresá tu clave maestra actual.'; return; }
+  $('cfg-bio-err').textContent = '';
+  spin(true);
+  var email = AUTH.currentUser.email;
+  var ok = await registerBiometric(email, masterpw);
+  spin(false);
+  if (ok) {
+    toast('🤳 Huella activada correctamente ✓');
+    $('cfg-masterpw-bio').value = '';
+    $('bio-status').textContent = '✅ Huella activada';
+    $('bio-status').style.color = 'var(--ok)';
+    $('btn-save-bio').textContent = 'Cambiar huella dactilar';
+    checkBiometric();
+  } else {
+    $('cfg-bio-err').textContent = 'No se pudo activar. Intentá de nuevo.';
+  }
+});
+
+// Cambiar tiempo de bloqueo
+$('cfg-lock-time').addEventListener('change', function() {
+  var mins = parseInt(this.value);
+  localStorage.setItem('vk_lock_time', this.value);
+  LOCK_TIME = mins > 0 ? mins * 60 * 1000 : null;
+  if (mins > 0) resetLockTimer();
+  else clearTimeout(lockTimer);
+  toast('Tiempo de bloqueo actualizado ✓');
+});
+
+// ══ BLOQUEO AUTOMÁTICO (3 minutos) ══
+var lockTimer;
+var LOCK_TIME = (parseInt(localStorage.getItem('vk_lock_time')||'3')) * 60 * 1000;
+
+function resetLockTimer() {
+  clearTimeout(lockTimer);
+  if (!LOCK_TIME) return;
+  lockTimer = setTimeout(function() {
+    if (document.getElementById('screen-app').classList.contains('active')) {
+      encKey = null; vault = [];
+      $('login-email').value = '';
+      $('login-pass').value = '';
+      SS('screen-auth');
+      toast('Sesión bloqueada por inactividad', 'err');
+    }
+  }, LOCK_TIME);
+}
+
+document.addEventListener('touchstart', resetLockTimer);
+document.addEventListener('click', resetLockTimer);
+document.addEventListener('keypress', resetLockTimer);
 
 var genPass='';
 function genPw() {
