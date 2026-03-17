@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VaultKey</title>
+<meta name="theme-color" content="#202124">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VaultKey">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23202124'/><path d='M50 10C35 10 23 22 23 37v7H17v46h66V44h-6v-7C77 22 65 10 50 10zm0 8c11 0 19 8 19 19v7H31v-7c0-11 8-19 19-19zm0 28a9 9 0 0 1 3 17.5V70h-6v-6.5A9 9 0 0 1 50 46z' fill='%2338c1d6'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -221,9 +227,20 @@ header{background:var(--s1);border-bottom:1px solid var(--b);padding:0 20px;heig
 .toast-check{display:inline-block;animation:checkAnim .3s cubic-bezier(.16,1,.3,1);}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:3px;}
 @media(max-width:480px){.stats{gap:7px;padding:14px 14px 0;}.stat{padding:12px 8px;}.stat-n{font-size:22px;}.toolbar,.grid{padding-left:14px;padding-right:14px;}header{padding:0 14px;}.fgrid{grid-template-columns:1fr;}}
+/* OFFLINE BANNER */
+.offline-bar{display:none;position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(251,191,36,0.95);backdrop-filter:blur(8px);padding:8px 16px;font-size:12px;font-weight:700;color:#0a0a0a;text-align:center;gap:8px;align-items:center;justify-content:center;}
+.offline-bar.show{display:flex;}
+.offline-bar .sync-dot{width:8px;height:8px;border-radius:50%;background:#0a0a0a;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.sync-badge{position:fixed;bottom:90px;right:22px;background:var(--warn);color:#0a0a0a;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;display:none;z-index:190;}
+.sync-badge.show{display:block;}
+/* INSTALL BUTTON */
+.install-btn{display:none;background:linear-gradient(135deg,#38c1d6,#2aa8bc);border:none;border-radius:8px;padding:6px 12px;color:#0a0a0a;font-family:"DM Sans",sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;}
+.install-btn.show{display:block;}
 </style>
 </head>
-<body><div id="screen-splash" class="screen active" style="align-items:center;justify-content:center;background:var(--bg);">
+<body><div id="offline-bar" class="offline-bar"><div class="sync-dot"></div><span id="offline-msg">Sin internet — cambios guardados localmente</span></div>
+<div id="sync-badge" class="sync-badge">⏳ <span id="sync-count">0</span> pendiente(s)</div><div id="screen-splash" class="screen active" style="align-items:center;justify-content:center;background:var(--bg);">
   <div id="splash-content" style="text-align:center;">
     <div id="splash-icon" style="width:80px;height:80px;margin:0 auto 20px;background:var(--s1);border:2px solid var(--ac);border-radius:22px;display:flex;align-items:center;justify-content:center;animation:splashPop .6s cubic-bezier(.16,1,.3,1) forwards;">
       <svg width="40" height="40" viewBox="0 0 28 28" fill="none"><path d="M14 2C9.58 2 6 5.58 6 10v2H4v14h20V12h-2v-2c0-4.42-3.58-8-8-8zm0 2.5c3.04 0 5.5 2.46 5.5 5.5v2H8.5v-2c0-3.04 2.46-5.5 5.5-5.5zm0 9.5a2.5 2.5 0 0 1 .75 4.88V21h-1.5v-2.12A2.5 2.5 0 0 1 14 14z" fill="#38c1d6"/></svg>
@@ -278,7 +295,7 @@ header{background:var(--s1);border-bottom:1px solid var(--b);padding:0 20px;heig
       <div class="hlogo-icon"><svg width="16" height="16" viewBox="0 0 28 28" fill="none"><path d="M14 2C9.58 2 6 5.58 6 10v2H4v14h20V12h-2v-2c0-4.42-3.58-8-8-8zm0 2.5c3.04 0 5.5 2.46 5.5 5.5v2H8.5v-2c0-3.04 2.46-5.5 5.5-5.5zm0 9.5a2.5 2.5 0 0 1 .75 4.88V21h-1.5v-2.12A2.5 2.5 0 0 1 14 14z" fill="#38c1d6"/></svg></div>
       <span class="hlogo-text">VaultKey</span>
     </div>
-    <div class="hright"><span id="user-email" class="upill">—</span><button id="btn-settings" style="background:none;border:1px solid var(--b);border-radius:8px;padding:6px 10px;color:var(--muted2);font-size:16px;cursor:pointer;transition:.2s;" title="Configuración">⚙️</button><button id="btn-logout" class="btn-out">Salir</button></div>
+    <div class="hright"><span id="user-email" class="upill">—</span><button id="btn-install" class="install-btn" title="Instalar app">📲 Instalar</button><button id="btn-settings" style="background:none;border:1px solid var(--b);border-radius:8px;padding:6px 10px;color:var(--muted2);font-size:16px;cursor:pointer;transition:.2s;" title="Configuración">⚙️</button><button id="btn-logout" class="btn-out">Salir</button></div>
   </header>
   <div class="stats">
     <div class="stat active" data-type="password"><span class="stat-n" id="cnt-pass">0</span><span class="stat-l">🔑 Claves</span></div>
@@ -1332,6 +1349,225 @@ $('gen-length').addEventListener('input',function(){$('gen-len-val').textContent
 ['cb-upper','cb-lower','cb-num','cb-sym'].forEach(function(id){$(id).addEventListener('change',genPw);});
 $('btn-copy-gen').addEventListener('click',function(){if(genPass)navigator.clipboard.writeText(genPass).then(function(){toast('Contrase\u00f1a copiada \u2713');});});
 $('btn-use-pass').addEventListener('click',function(){if(genPass){$('p-pass').value=genPass; closeM('modal-gen'); toast('Contrase\u00f1a aplicada \u2713');}});
+
+// ══════════════════════════════════════════════════
+// ██████  OFFLINE SYNC + PWA
+// ══════════════════════════════════════════════════
+
+// ── Cola de operaciones pendientes ──
+function getQueue()     { return JSON.parse(localStorage.getItem('vk_queue')||'[]'); }
+function setQueue(q)    { localStorage.setItem('vk_queue',JSON.stringify(q)); }
+function addToQueue(op) { const q=getQueue(); q.push(op); setQueue(q); updateSyncBadge(); }
+function updateSyncBadge() {
+  const q=getQueue();
+  const badge=$('sync-badge');
+  if(q.length>0){ badge.classList.add('show'); $('sync-count').textContent=q.length; }
+  else           { badge.classList.remove('show'); }
+}
+
+// ── Caché local del vault para modo offline ──
+function cacheVaultLocally(uid) {
+  localStorage.setItem('vk_cache_'+uid, JSON.stringify(vault));
+}
+function loadVaultFromCache(uid) {
+  const raw = localStorage.getItem('vk_cache_'+uid);
+  if(!raw) return false;
+  try { vault = JSON.parse(raw); renderEntries(); updateCounts(); return true; }
+  catch { return false; }
+}
+
+// ── Parchar saveEntry para soporte offline ──
+const _origSaveEntry = saveEntry;
+window.saveEntry = async function(d) {
+  if(!navigator.onLine && !IS_LOCAL) {
+    // Guardar localmente
+    const uid  = AUTH.currentUser ? AUTH.currentUser.uid : 'offline';
+    const type = curT;
+    const plain= buildPlain(type,d);
+    const encRow = { type, cat:d.category||'Otro', enc:ENC(plain), updatedAt:Date.now() };
+    const tempId = 'pending_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    if(editId) {
+      const i = vault.findIndex(v=>v.id===editId);
+      if(i>-1) vault[i]={id:editId,type,category:encRow.cat,...plain};
+      addToQueue({op:'update', uid, id:editId, row:encRow});
+      toast('Sin internet — guardado local ⚡');
+    } else {
+      vault.unshift({id:tempId,type,category:encRow.cat,...plain,_pending:true});
+      addToQueue({op:'add', uid, tempId, row:encRow});
+      toast('Sin internet — guardado local ⚡');
+    }
+    cacheVaultLocally(uid);
+    renderEntries(); updateCounts(); closeM('modal-add'); return;
+  }
+  return _origSaveEntry(d);
+};
+
+// ── Parchar deleteEntry para soporte offline ──
+const _origDeleteEntry = deleteEntry;
+window.deleteEntry = async function(id) {
+  if(!navigator.onLine && !IS_LOCAL) {
+    const uid = AUTH.currentUser ? AUTH.currentUser.uid : 'offline';
+    vault = vault.filter(v=>v.id!==id);
+    addToQueue({op:'delete', uid, id});
+    cacheVaultLocally(uid);
+    renderEntries(); updateCounts();
+    toast('Sin internet — eliminado local ⚡');
+    closeM('modal-del'); return;
+  }
+  return _origDeleteEntry(id);
+};
+
+// ── Sincronizar cola cuando vuelve internet ──
+async function syncQueue() {
+  if(IS_LOCAL) return;
+  const q = getQueue();
+  if(!q.length) return;
+  const uid = AUTH.currentUser ? AUTH.currentUser.uid : null;
+  if(!uid) return;
+
+  $('offline-msg').textContent = '🔄 Sincronizando ' + q.length + ' cambio(s)…';
+  let success = 0;
+  const remaining = [];
+
+  for(const op of q) {
+    try {
+      if(op.op==='add') {
+        const ref = await DB.collection('vaults').doc(op.uid).collection('entries').add({...op.row, createdAt:TS()});
+        // Actualizar tempId → real id en vault
+        const i = vault.findIndex(v=>v.id===op.tempId);
+        if(i>-1){ vault[i].id=ref.id; delete vault[i]._pending; }
+        success++;
+      } else if(op.op==='update') {
+        await DB.collection('vaults').doc(op.uid).collection('entries').doc(op.id).update(op.row);
+        success++;
+      } else if(op.op==='delete') {
+        await DB.collection('vaults').doc(op.uid).collection('entries').doc(op.id).delete();
+        success++;
+      }
+    } catch(e) {
+      remaining.push(op);
+    }
+  }
+
+  setQueue(remaining);
+  updateSyncBadge();
+  cacheVaultLocally(uid);
+
+  if(success > 0) {
+    toast('✅ ' + success + ' cambio(s) sincronizados con Firebase');
+    renderEntries();
+  }
+  if(remaining.length > 0) {
+    toast('⚠️ ' + remaining.length + ' cambio(s) no pudieron sincronizarse', 'err');
+  }
+}
+
+// ── Parchar loadVault para cargar caché si está offline ──
+const _origLoadVault = loadVault;
+window.loadVault = async function(uid) {
+  if(!navigator.onLine && !IS_LOCAL) {
+    const loaded = loadVaultFromCache(uid);
+    if(loaded) { toast('Modo offline — datos del caché local ⚡'); return; }
+  }
+  await _origLoadVault(uid);
+  cacheVaultLocally(uid);
+};
+
+// ── Detectar cambios de conexión ──
+function setOnlineStatus(online) {
+  const bar = $('offline-bar');
+  if(online) {
+    bar.classList.remove('show');
+    bar.style.background = 'rgba(74,222,128,0.9)';
+    $('offline-msg').textContent = '✅ Conexión restaurada — sincronizando…';
+    bar.classList.add('show');
+    setTimeout(()=>bar.classList.remove('show'),3000);
+    syncQueue();
+  } else {
+    bar.style.background = 'rgba(251,191,36,0.95)';
+    $('offline-msg').textContent = '📵 Sin internet — cambios guardados localmente';
+    bar.classList.add('show');
+  }
+}
+
+window.addEventListener('online',  ()=>setOnlineStatus(true));
+window.addEventListener('offline', ()=>setOnlineStatus(false));
+if(!navigator.onLine) setOnlineStatus(false);
+updateSyncBadge();
+
+// ══════════════════════════════════════════════════
+// ██████  PWA — MANIFEST + SERVICE WORKER
+// ══════════════════════════════════════════════════
+
+// Manifest dinámico
+const manifest = {
+  name: 'VaultKey — Gestor Seguro',
+  short_name: 'VaultKey',
+  description: 'Gestor de contraseñas con cifrado AES-256',
+  start_url: '/',
+  display: 'standalone',
+  orientation: 'portrait',
+  background_color: '#202124',
+  theme_color: '#38c1d6',
+  icons: [
+    { src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23202124'/><path d='M50 10C35 10 23 22 23 37v7H17v46h66V44h-6v-7C77 22 65 10 50 10zm0 8c11 0 19 8 19 19v7H31v-7c0-11 8-19 19-19zm0 28a9 9 0 0 1 3 17.5V70h-6v-6.5A9 9 0 0 1 50 46z' fill='%2338c1d6'/></svg>", sizes:'192x192', type:'image/svg+xml' },
+    { src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23202124'/><path d='M50 10C35 10 23 22 23 37v7H17v46h66V44h-6v-7C77 22 65 10 50 10zm0 8c11 0 19 8 19 19v7H31v-7c0-11 8-19 19-19zm0 28a9 9 0 0 1 3 17.5V70h-6v-6.5A9 9 0 0 1 50 46z' fill='%2338c1d6'/></svg>", sizes:'512x512', type:'image/svg+xml', purpose:'any maskable' }
+  ]
+};
+const mBlob = new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+const mUrl  = URL.createObjectURL(mBlob);
+const mLink = document.createElement('link');
+mLink.rel='manifest'; mLink.href=mUrl;
+document.head.appendChild(mLink);
+
+// Service Worker para caché y soporte offline
+if('serviceWorker' in navigator && !IS_LOCAL) {
+  const swCode = `
+const CACHE='vaultkey-v1';
+const URLS=['/'];
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(URLS)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET') return;
+  e.respondWith(
+    fetch(e.request).then(r=>{
+      const rc=r.clone();
+      caches.open(CACHE).then(c=>c.put(e.request,rc));
+      return r;
+    }).catch(()=>caches.match(e.request).then(r=>r||new Response('Offline',{status:503})))
+  );
+});`;
+  const swBlob = new Blob([swCode],{type:'application/javascript'});
+  const swUrl  = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl, {scope:'/'}).catch(()=>{
+    // Fallback: registrar sin scope en caso de error
+    navigator.serviceWorker.register(swUrl).catch(()=>{});
+  });
+}
+
+// ── Botón Instalar PWA ──
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  $('btn-install').classList.add('show');
+});
+$('btn-install').addEventListener('click', async () => {
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const {outcome} = await deferredPrompt.userChoice;
+  if(outcome==='accepted') toast('✅ VaultKey instalada como app');
+  deferredPrompt=null;
+  $('btn-install').classList.remove('show');
+});
+window.addEventListener('appinstalled', ()=>{
+  toast('✅ App instalada exitosamente');
+  $('btn-install').classList.remove('show');
+});
 </script>
 </body>
 </html>
